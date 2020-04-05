@@ -1,12 +1,20 @@
 import { Controller, Get } from '@nestjs/common';
 import { TicketsService, ITicket } from '../services/tickets.service';
+import { ApiTags } from '@nestjs/swagger';
+import { TicketDto } from './ticket.dto';
 
-@Controller()
+@ApiTags('ticket')
+@Controller("api/v1/tickets")
 export class TicketsController {
   constructor(private readonly ticketsService: TicketsService) {}
 
   @Get()
-  getHello(): ITicket[] {
+  ticketsRessource(): TicketDto[] {
+    return this.ticketsService.getAllTickets();
+  }
+
+  @Get(":id")
+  ticketIdRessource(): TicketDto[] {
     return this.ticketsService.getAllTickets();
   }
 }
