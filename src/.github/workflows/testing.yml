@@ -1,4 +1,4 @@
-name: Unit-Testing of Backend
+name: Tests
 
 on:
   pull_request:
@@ -23,5 +23,7 @@ jobs:
         run: npm ci
       - name: npm test
         run: npm run test
+      - name: npm e2e
+        run: npm run test:e2e
         env:
           CI: true
