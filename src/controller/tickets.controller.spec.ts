@@ -14,9 +14,12 @@ describe('TicketsController', () => {
     controller = app.get<TicketsController>(TicketsController);
   });
 
-  describe('root', () => {
-    it('should return "Hello World!"', () => {
-      expect(controller.getHello()).toBe('Hello World!');
+  describe('Request ticket ressources', () => {
+    it('Should return ticket for 007', () => {
+      const tickets = controller.ticketsRessource();
+      expect(tickets.length).toBe(1);
+      const { id } = tickets[0];
+      expect('007').toBe(id);
     });
   });
 });
