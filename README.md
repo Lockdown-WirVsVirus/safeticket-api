@@ -1,3 +1,5 @@
+![Continuous  Integration](https://github.com/Lockdown-WirVsVirus/safeticket-api/workflows/Node.js%20CI/badge.svg)
+-------------
 # SafeTicket API
 
 ## Installation
