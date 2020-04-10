@@ -27,3 +27,31 @@ export const TicketSchema = new mongoose.Schema({
   validFromDateTime: Date,
   validToDateTime: Date,
 });
+
+export interface TicketModel extends mongoose.Document {
+  id: string,
+
+  // owner
+  hashedPassportId: string,
+  hashedPin: string,
+
+  reason: string,
+
+  startAddress: {
+    street: string,
+    houseNumber: string,
+    zipCode: string,
+    city: string,
+    country: string,
+  },
+  endAddress: {
+    street: string,
+    houseNumber: string,
+    zipCode: string,
+    city: string,
+    country: string,
+  },
+
+  validFromDateTime: Date,
+  validToDateTime: Date,
+}
