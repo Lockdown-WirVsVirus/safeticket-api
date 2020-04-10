@@ -7,7 +7,7 @@ import { TicketSchema } from './schema/tickets.schema';
 @Module({
   imports: [
     MongooseModule.forRoot(
-      'mongodb://' + process.env.MLAB_HOST + '/' + process.env.MLAB_DATABASE,
+      'mongodb://localhost:27017/tickets',
     ),
     MongooseModule.forFeature([{ name: 'Tickets', schema: TicketSchema }]),
   ],
