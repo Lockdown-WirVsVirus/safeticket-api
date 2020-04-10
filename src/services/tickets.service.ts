@@ -40,13 +40,17 @@ export class TicketsService {
   }
 
   async deleteTicket(deleteTicketDTO: TicketDto): Promise<String> {
+    if (!deleteTicketDTO.id) {
+      return "id is empty";
+    }
+
     let result = await this.ticketModel.deleteOne({
-      id : deleteTicketDTO.id
+      id: deleteTicketDTO.id
     })
 
-    if (result.n == 0){
+    if (result.n == 0) {
       return "No tickets with this id";
-    } 
+    }
     return "Delete ticket";
   }
 
