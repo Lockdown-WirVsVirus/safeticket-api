@@ -7,7 +7,7 @@ import { TicketSchema } from './schema/tickets.schema';
 @Module({
   imports: [
     MongooseModule.forRoot(
-      'mongodb://localhost:27017/tickets',
+      'mongodb://root:example@localhost:27017/admin',
     ),
     MongooseModule.forFeature([{ name: 'Tickets', schema: TicketSchema }]),
   ],

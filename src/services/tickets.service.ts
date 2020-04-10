@@ -1,4 +1,9 @@
 import { Injectable } from '@nestjs/common';
+import { InjectModel } from '@nestjs/mongoose';
+import { TicketModel } from "./../schema/tickets.schema";
+import { Model } from "mongoose";
+import { TicketDto } from "./../controller/ticket.dto";
+
 
 export interface IAddress {
   street: string;
@@ -24,8 +29,16 @@ export interface ITicket {
   validToDateTime: Date;
 }
 
+
 @Injectable()
 export class TicketsService {
+  constructor(@InjectModel('Tickets') private ticketModel: Model<TicketModel>) { }
+  
+  async createTicket(createTicketDTO: TicketDto): Promise<ITicket> {
+    const createdTicket = new this.ticketModel(createTicketDTO);
+    return await createdTicket.save();
+  }
+
   getAllTickets(): ITicket[] {
     return [
       {
