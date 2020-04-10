@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { TicketModel } from "./../schema/tickets.schema";
-import { Model } from "mongoose";
+import { Model, Types } from "mongoose";
 import { TicketDto } from "./../controller/ticket.dto";
 
 
@@ -33,10 +33,21 @@ export interface ITicket {
 @Injectable()
 export class TicketsService {
   constructor(@InjectModel('Tickets') private ticketModel: Model<TicketModel>) { }
-  
+
   async createTicket(createTicketDTO: TicketDto): Promise<ITicket> {
     const createdTicket = new this.ticketModel(createTicketDTO);
     return await createdTicket.save();
+  }
+
+  async deleteTicket(deleteTicketDTO: TicketDto): Promise<String> {
+    let result = await this.ticketModel.deleteOne({
+      id : deleteTicketDTO.id
+    })
+
+    if (result.n == 0){
+      return "No tickets with this id";
+    } 
+    return "Delete ticket";
   }
 
   getAllTickets(): ITicket[] {

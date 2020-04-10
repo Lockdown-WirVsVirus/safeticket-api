@@ -23,4 +23,10 @@ export class TicketsController {
   ticketIdRessource(): TicketDto[] {
     return this.ticketsService.getAllTickets();
   }
+
+  @Post("deleteTickets")
+  async deleteTicket(@Body() ticketDto: TicketDto): Promise<String>{
+    console.log
+    return this.ticketsService.deleteTicket(ticketDto);
+  }
 }
