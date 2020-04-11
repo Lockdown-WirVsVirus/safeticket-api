@@ -1,7 +1,7 @@
 import { Controller, Get, Post, Body } from '@nestjs/common';
-import { TicketsService, ITicket } from '../services/tickets.service';
+import { TicketsService } from '../services/tickets.service';
 import { ApiTags } from '@nestjs/swagger';
-import { TicketDto } from './ticket.dto';
+import { TicketDto, IntervalDto } from './ticket.dto';
 
 @ApiTags('ticket')
 @Controller("api/v1/tickets")
@@ -17,6 +17,11 @@ export class TicketsController {
   createTicket(@Body() ticketDto: TicketDto): String{
     this.ticketsService.createTicket(ticketDto)
     return "Created"
+  }
+
+  @Post("validateDate")
+  async  validateTicket(@Body() IntervalDto: IntervalDto): Promise<Boolean>{
+    return await this.ticketsService.validateDateTicket(IntervalDto);
   }
 
   @Get(":id")
