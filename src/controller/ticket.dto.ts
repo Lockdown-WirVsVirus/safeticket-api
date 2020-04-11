@@ -1,4 +1,4 @@
-import { ITicket, IAddress } from "src/services/tickets.service";
+import { ITicket, IAddress, IInterval } from "src/services/tickets.service";
 
 export class TicketDto implements ITicket {
     id: string;
@@ -15,3 +15,9 @@ export class TicketDto implements ITicket {
     validFromDateTime: Date;
     validToDateTime: Date;
 }
+
+export class IntervalDto implements IInterval {
+    readonly hashedPin: string;
+    readonly fromDateTime: Date;
+    readonly toDateTime: Date;
+} 
