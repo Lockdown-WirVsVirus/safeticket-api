@@ -1,11 +1,10 @@
 import * as mongoose from 'mongoose';
+import { Ticket } from 'src/services/tickets.service';
 
-export const TicketSchema = new mongoose.Schema({
-  id: String,
-
-  // owner
+export interface TicketModel extends Ticket, mongoose.Document {}
+export const ticketSchema = new mongoose.Schema({
+  ticketId: String,
   hashedPassportId: String,
-  hashedPin: String,
 
   reason: String,
 
@@ -27,31 +26,4 @@ export const TicketSchema = new mongoose.Schema({
   validFromDateTime: Date,
   validToDateTime: Date,
 });
-
-export interface TicketModel extends mongoose.Document {
-  id: string,
-
-  // owner
-  hashedPassportId: string,
-  hashedPin: string,
-
-  reason: string,
-
-  startAddress: {
-    street: string,
-    houseNumber: string,
-    zipCode: string,
-    city: string,
-    country: string,
-  },
-  endAddress: {
-    street: string,
-    houseNumber: string,
-    zipCode: string,
-    city: string,
-    country: string,
-  },
-
-  validFromDateTime: Date,
-  validToDateTime: Date,
-}
+export const ticketModel = mongoose.model<TicketModel>('Tickets', ticketSchema);

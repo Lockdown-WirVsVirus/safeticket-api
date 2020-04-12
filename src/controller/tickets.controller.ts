@@ -1,26 +1,40 @@
-import { Controller, Get, Post, Body } from '@nestjs/common';
-import { TicketsService, ITicket } from '../services/tickets.service';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Param,
+  Response,
+  HttpCode,
+} from '@nestjs/common';
+import { TicketsService, TicketRequest } from '../services/tickets.service';
 import { ApiTags } from '@nestjs/swagger';
-import { TicketDto } from './ticket.dto';
+import { TicketRequestDto, TicketResponseDto } from './ticket.dto';
 
 @ApiTags('ticket')
-@Controller("api/v1/tickets")
+@Controller('api/v1/tickets')
 export class TicketsController {
   constructor(private readonly ticketsService: TicketsService) {}
 
-  @Get()
-  ticketsRessource(): TicketDto[] {
-    return this.ticketsService.getAllTickets();
-  }
-
   @Post()
-  createTicket(@Body() ticketDto: TicketDto): String{
-    this.ticketsService.createTicket(ticketDto)
-    return "Created"
+  async createTicket(
+    @Body() ticketDto: TicketRequestDto,
+  ): Promise<TicketResponseDto> {
+    const createdTicket = await this.ticketsService.createTicket({
+      hashedPassportId: '#' + ticketDto.passportId,
+      reason: ticketDto.reason,
+      startAddress: ticketDto.startAddress,
+      endAddress: ticketDto.endAddress,
+      validFromDateTime: ticketDto.validFromDateTime,
+      validToDateTime: ticketDto.validToDateTime,
+    });
+
+    console.log('Created Ticket:', createdTicket);
+    return createdTicket;
   }
 
-  @Get(":id")
-  ticketIdRessource(): TicketDto[] {
-    return this.ticketsService.getAllTickets();
+  @Get(':ticketId')
+  ticketIdRessource(@Param() ticketId: string): TicketResponseDto {
+    return this.ticketsService.getTicket(ticketId);
   }
 }
