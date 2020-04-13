@@ -13,8 +13,11 @@ export interface IAddress {
 }
 export type TicketStatus = 'CREATED' | 'EXPIRED' | 'DECLINED';
 
-export interface TicketRequest {
+export interface Identity {
   hashedPassportId: string;
+}
+
+export interface TicketRequest extends Identity {
   reason: string;
 
   startAddress: IAddress;
@@ -37,40 +40,30 @@ export class TicketsService {
     @InjectModel('Tickets') private ticketModel: Model<TicketModel>,
   ) {}
 
+  /**
+   *Creates a new ticket by given request.
+   * @param ticketToCreate the new ticket to create.
+   */
   async createTicket(ticketToCreate: TicketRequest): Promise<Ticket> {
-    // this.logger.log('Save Ticket:', JSON.stringify(ticketToCreate));
-
-    const createdTicket = new this.ticketModel(ticketToCreate);
-    return createdTicket.save();
+    return new this.ticketModel(ticketToCreate).save();
   }
 
-  getTicket(ticketId: String): TicketResponseDto {
-    return {
-      ticketId: '007',
-
-      hashedPassportId: '',
-
-      reason: 'Partyabend',
-
-      startAddress: {
-        street: '',
-        houseNumber: '',
-        zipCode: '',
-        city: '',
-        country: '',
-      },
-      endAddress: {
-        street: '',
-        houseNumber: '',
-        zipCode: '',
-        city: '',
-        country: '',
-      },
-
-      validFromDateTime: new Date(),
-      validToDateTime: new Date(),
-
-      ticketStatus: 'CREATED',
-    };
+  /**
+   * Search all tickets which belongs to hashed password id.
+   * @param searchedHashedPasswordId hashed passwort id to search for tickets
+   */
+  async retrieveByIdentity(identity: Identity): Promise<Ticket[]> {
+    return this.ticketModel.find({
+      hashedPassportId: identity.hashedPassportId,
+    });
+  }
+  /**
+   *Find one ticket by ticket id.
+   * @param searchTicketId the ticket id of ticket to search
+   */
+  async findTicket(searchTicketId: string): Promise<Ticket> {
+    return this.ticketModel.findOne({
+      ticketId: searchTicketId,
+    });
   }
 }

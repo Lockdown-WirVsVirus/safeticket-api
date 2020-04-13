@@ -1,4 +1,9 @@
-import { IAddress, TicketStatus, Ticket } from 'src/services/tickets.service';
+import {
+  IAddress,
+  TicketStatus,
+  Ticket,
+  Identity,
+} from 'src/services/tickets.service';
 
 export class TicketRequestDto {
   passportId: string;
@@ -9,6 +14,10 @@ export class TicketRequestDto {
 
   validFromDateTime: Date;
   validToDateTime: Date;
+}
+
+export class IdentityDto implements Identity {
+  hashedPassportId: string;
 }
 
 export class TicketResponseDto implements Ticket {
