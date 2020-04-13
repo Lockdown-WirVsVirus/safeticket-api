@@ -3,7 +3,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { TicketModel } from '../schema/tickets.schema';
 
-interface IAddress {
+export interface Address {
   street: string;
   houseNumber: string;
   zipCode: string;
@@ -19,8 +19,8 @@ export interface Identity {
 export interface TicketRequest extends Identity {
   reason: string;
 
-  startAddress: IAddress;
-  endAddress: IAddress;
+  startAddress: Address;
+  endAddress: Address;
 
   validFromDateTime: Date;
   validToDateTime: Date;
