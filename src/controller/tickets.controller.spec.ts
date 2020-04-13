@@ -1,14 +1,13 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { TicketsController } from './tickets.controller';
 import { TicketsService, Ticket } from '../services/tickets.service';
-import { ticketModel, TicketModel } from 'src/schema/tickets.schema';
+import { ticketModel } from '../schema/tickets.schema';
 import { TicketRequestDto } from './ticket.dto';
 import { getModelToken } from '@nestjs/mongoose';
-import { Mongoose, Model } from 'mongoose';
 
 describe('TicketsController', () => {
   let controller: TicketsController;
-  let ticketModel;
+  let mockedTicketService: TicketsService;
 
   beforeEach(async () => {
     const app: TestingModule = await Test.createTestingModule({
@@ -23,13 +22,31 @@ describe('TicketsController', () => {
     }).compile();
 
     controller = app.get<TicketsController>(TicketsController);
-    ticketModel = jest.spyOn(ticketModel, 'save').mockReturnValue({});
+    mockedTicketService = app.get<TicketsService>(TicketsService);
+
+    // Mock ticket save to db
+    const mockedTicket: Ticket = {
+      ticketId: 'testing',
+      reason: 'simulation',
+      startAddress: { street: '', houseNumber: '', zipCode: '', city: '', country: '' },
+      endAddress: { street: '', houseNumber: '', zipCode: '', city: '', country: '' },
+      hashedPassportId: 'wdasdsdas',
+      ticketStatus: 'CREATED',
+      validFromDateTime: new Date(),
+      validToDateTime: new Date(),
+    }
+    jest.spyOn(mockedTicketService, 'createTicket').mockImplementation(() => Promise.resolve(mockedTicket))
   });
 
-  describe('Request ticket ressources', () => {
-    it('Should return ticket for 007', async () => {
+  describe('Request ticket ressource', () => {
+    it('Should create a ticket', async () => {
       const ticketDto: TicketRequestDto = new TicketRequestDto();
       const tickets = await controller.createTicket(ticketDto);
+
+      expect(tickets.ticketId).toBeTruthy();
+      expect(tickets.reason).toBeTruthy();
+      expect(tickets.hashedPassportId).toBeTruthy();
+      expect(tickets.ticketStatus).toBe('CREATED');
     });
   });
 });
