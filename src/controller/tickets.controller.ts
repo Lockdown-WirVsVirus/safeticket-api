@@ -37,7 +37,7 @@ export class TicketsController {
   }
 
   @Get(':ticketId')
-  ticketIdRessource(@Param() ticketId: string): TicketResponseDto {
+  ticketIdRessource(@Param('ticketId') ticketId: string): TicketResponseDto {
     return this.ticketsService.getTicket(ticketId);
   }
 }

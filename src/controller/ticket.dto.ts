@@ -1,11 +1,19 @@
-import { IAddress, TicketStatus, Ticket } from 'src/services/tickets.service';
+import { TicketStatus, Ticket } from 'src/services/tickets.service';
+
+class Address {
+  street: string;
+  houseNumber: string;
+  zipCode: string;
+  city: string;
+  country: string;
+}
 
 export class TicketRequestDto {
   passportId: string;
   reason: string;
 
-  startAddress: IAddress;
-  endAddress: IAddress;
+  startAddress: Address;
+  endAddress: Address;
 
   validFromDateTime: Date;
   validToDateTime: Date;
@@ -17,8 +25,8 @@ export class TicketResponseDto implements Ticket {
   hashedPassportId: string;
   reason: string;
 
-  startAddress: IAddress;
-  endAddress: IAddress;
+  startAddress: Address;
+  endAddress: Address;
 
   validFromDateTime: Date;
   validToDateTime: Date;
