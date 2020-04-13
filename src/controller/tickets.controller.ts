@@ -1,22 +1,50 @@
+import { Controller, Get, Post, Body, Param, Logger } from '@nestjs/common';
 import {
-  Controller,
-  Get,
-  Post,
-  Body,
-  Param,
-  Response,
-  HttpCode,
-  Logger,
-} from '@nestjs/common';
-import { TicketsService, TicketRequest } from '../services/tickets.service';
+  TicketsService,
+  IAddress as Address,
+  Identity,
+  Ticket,
+  TicketStatus,
+} from '../services/tickets.service';
 import { ApiTags } from '@nestjs/swagger';
-import {
-  TicketRequestDto,
-  TicketResponseDto,
-  TicketsOfUser,
-  IdentityDto,
-} from './ticket.dto';
-import { identity } from 'rxjs';
+
+export class TicketRequestDto {
+  passportId: string;
+  reason: string;
+
+  startAddress: Address;
+  endAddress: Address;
+
+  validFromDateTime: Date;
+  validToDateTime: Date;
+}
+
+export class IdentityDto implements Identity {
+  hashedPassportId: string;
+}
+
+export class TicketResponseDto implements Ticket {
+  ticketId: string;
+
+  hashedPassportId: string;
+  reason: string;
+
+  startAddress: Address;
+  endAddress: Address;
+
+  validFromDateTime: Date;
+  validToDateTime: Date;
+
+  ticketStatus: TicketStatus;
+}
+
+export class AddressDto implements Address {
+  street: string;
+  houseNumber: string;
+  zipCode: string;
+  city: string;
+  country: string;
+}
 
 @ApiTags('ticket')
 @Controller('api/v1/tickets')

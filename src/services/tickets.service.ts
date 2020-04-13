@@ -1,7 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { TicketResponseDto } from './../controller/ticket.dto';
 import { TicketModel } from '../schema/tickets.schema';
 
 export interface IAddress {

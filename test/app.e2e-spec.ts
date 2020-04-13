@@ -3,11 +3,13 @@ import { INestApplication } from '@nestjs/common';
 import * as request from 'supertest';
 import { MongooseModule } from '@nestjs/mongoose';
 import { ticketSchema } from '../src/schema/tickets.schema';
-import { TicketsController } from '../src/controller/tickets.controller';
+import {
+  TicketsController,
+  TicketRequestDto,
+} from '../src/controller/tickets.controller';
 import { TicketsService } from '../src/services/tickets.service';
 import { HashingService } from '../src/services/hashing.service';
 import { MongoMemoryServer } from 'mongodb-memory-server';
-import { TicketRequestDto } from 'src/controller/ticket.dto';
 
 describe('AppController (e2e)', () => {
   let app: INestApplication;
@@ -34,17 +36,29 @@ describe('AppController (e2e)', () => {
   afterEach(async () => {
     await mongod.stop();
     await app.close();
-  }, 5_000)
+  }, 5_000);
 
   it('should create and get ticket', () => {
     const ticketRequest: TicketRequestDto = {
-        passportId: 'LXXXXXXX',
-        reason: 'Party',
-        startAddress: { street: 'Straße', houseNumber: '1', zipCode: '01234', city: 'Stadt', country: 'Germany' },
-        endAddress: { street: 'Straße', houseNumber: '1', zipCode: '01234', city: 'Stadt', country: 'Germany' },
-        validFromDateTime: new Date(),
-        validToDateTime: new Date(),
-    }
+      passportId: 'LXXXXXXX',
+      reason: 'Party',
+      startAddress: {
+        street: 'Straße',
+        houseNumber: '1',
+        zipCode: '01234',
+        city: 'Stadt',
+        country: 'Germany',
+      },
+      endAddress: {
+        street: 'Straße',
+        houseNumber: '1',
+        zipCode: '01234',
+        city: 'Stadt',
+        country: 'Germany',
+      },
+      validFromDateTime: new Date(),
+      validToDateTime: new Date(),
+    };
     return request(app.getHttpServer())
       .post('/api/v1/tickets')
       .send(ticketRequest)
