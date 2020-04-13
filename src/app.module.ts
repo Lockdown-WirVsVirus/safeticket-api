@@ -3,6 +3,7 @@ import { TicketsController } from './controller/tickets.controller';
 import { TicketsService } from './services/tickets.service';
 import { MongooseModule } from '@nestjs/mongoose';
 import { ticketSchema } from './schema/tickets.schema';
+import { HashingService } from './services/hashing.service';
 
 @Module({
   imports: [
@@ -10,6 +11,6 @@ import { ticketSchema } from './schema/tickets.schema';
     MongooseModule.forFeature([{ name: 'Tickets', schema: ticketSchema }]),
   ],
   controllers: [TicketsController],
-  providers: [TicketsService],
+  providers: [TicketsService, HashingService],
 })
 export class AppModule {}
