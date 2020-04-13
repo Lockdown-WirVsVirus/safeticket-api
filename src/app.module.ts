@@ -5,9 +5,14 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { ticketSchema } from './schema/tickets.schema';
 import { HashingService } from './services/hashing.service';
 
+if (!process.env.MONGODB_URI) {
+  console.error('no MONGODB_URI! Please set env var.');
+  process.exit(1);
+}
+
 @Module({
   imports: [
-    MongooseModule.forRoot('mongodb://root:example@localhost:27017/admin'),
+    MongooseModule.forRoot(process.env.MONGODB_URI),
     MongooseModule.forFeature([{ name: 'Tickets', schema: ticketSchema }]),
   ],
   controllers: [TicketsController],

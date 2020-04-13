@@ -6,6 +6,7 @@ import {
   Param,
   Response,
   HttpCode,
+  Logger,
 } from '@nestjs/common';
 import { TicketsService, TicketRequest } from '../services/tickets.service';
 import { ApiTags } from '@nestjs/swagger';
@@ -14,6 +15,8 @@ import { TicketRequestDto, TicketResponseDto } from './ticket.dto';
 @ApiTags('ticket')
 @Controller('api/v1/tickets')
 export class TicketsController {
+  private readonly logger = new Logger(TicketsController.name);
+
   constructor(private readonly ticketsService: TicketsService) {}
 
   @Post()
@@ -29,7 +32,7 @@ export class TicketsController {
       validToDateTime: ticketDto.validToDateTime,
     });
 
-    // console.log('Created Ticket:', createdTicket);
+    // this.logger.log('Created Ticket:', JSON.stringify(createdTicket));
     return createdTicket;
   }
 
