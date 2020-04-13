@@ -29,7 +29,7 @@ export class TicketsController {
       validToDateTime: ticketDto.validToDateTime,
     });
 
-    console.log('Created Ticket:', createdTicket);
+    // console.log('Created Ticket:', createdTicket);
     return createdTicket;
   }
 

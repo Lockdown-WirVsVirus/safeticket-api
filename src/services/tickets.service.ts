@@ -36,7 +36,8 @@ export class TicketsService {
   ) {}
 
   async createTicket(ticketToCreate: TicketRequest): Promise<Ticket> {
-    console.log('Save ticket:', ticketToCreate);
+    // console.log('Save ticket:', ticketToCreate);
+
     const createdTicket = new this.ticketModel(ticketToCreate);
     return createdTicket.save();
   }
