@@ -37,13 +37,13 @@ describe('AppController (e2e)', () => {
   }, 5_000)
 
   it('should create and get ticket', () => {
-    const ticketRequest: TicketRequestDto = {
-        passportId: 'LXXXXXXX',
-        reason: 'Party',
-        startAddress: { street: 'Straße', houseNumber: '1', zipCode: '01234', city: 'Stadt', country: 'Germany' },
-        endAddress: { street: 'Straße', houseNumber: '1', zipCode: '01234', city: 'Stadt', country: 'Germany' },
-        validFromDateTime: new Date(),
-        validToDateTime: new Date(),
+    const ticketRequest = {
+        "passportId": "LXXXXXXX",
+        "reason": "Party",
+        "startAddress": { "street": "Straße", "houseNumber": "1", "zipCode": "01234", "city": "Stadt", "country": "Germany" },
+        "endAddress": { "street": "Straße", "houseNumber": "1", "zipCode": "01234", "city": "Stadt", "country": "Germany" },
+        "validFromDateTime": "2020-04-13T16:11:03.700Z",
+        "validToDateTime": "2020-04-13T16:11:03.700Z"
     }
     return request(app.getHttpServer())
       .post('/api/v1/tickets')
