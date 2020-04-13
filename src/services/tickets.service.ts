@@ -1,4 +1,8 @@
 import { Injectable } from '@nestjs/common';
+import { InjectModel } from '@nestjs/mongoose';
+import { Model } from 'mongoose';
+import { TicketResponseDto } from './../controller/ticket.dto';
+import { TicketModel } from '../schema/tickets.schema';
 
 export interface IAddress {
   street: string;
@@ -7,14 +11,10 @@ export interface IAddress {
   city: string;
   country: string;
 }
+export type TicketStatus = 'CREATED' | 'EXPIRED' | 'DECLINED';
 
-export interface ITicket {
-  id: string;
-
-  // owner
+export interface TicketRequest {
   hashedPassportId: string;
-  hashedPin: string;
-
   reason: string;
 
   startAddress: IAddress;
@@ -24,36 +24,51 @@ export interface ITicket {
   validToDateTime: Date;
 }
 
+export interface Ticket extends TicketRequest {
+  ticketId: string;
+  ticketStatus: TicketStatus;
+}
+
 @Injectable()
 export class TicketsService {
-  getAllTickets(): ITicket[] {
-    return [
-      {
-        id: "007",
+  constructor(
+    @InjectModel('Tickets') private ticketModel: Model<TicketModel>,
+  ) {}
 
-        hashedPassportId: "",
-        hashedPin: "",
+  async createTicket(ticketToCreate: TicketRequest): Promise<Ticket> {
+    // console.log('Save ticket:', ticketToCreate);
 
-        reason: "Partyabend",
+    const createdTicket = new this.ticketModel(ticketToCreate);
+    return createdTicket.save();
+  }
 
-        startAddress: {
-          street: "",
-          houseNumber: "",
-          zipCode: "",
-          city: "",
-          country: ""
-        },
-        endAddress: {
-          street: "",
-          houseNumber: "",
-          zipCode: "",
-          city: "",
-          country: ""
-        },
+  getTicket(ticketId: String): TicketResponseDto {
+    return {
+      ticketId: '007',
 
-        validFromDateTime: new Date(),
-        validToDateTime: new Date(),
+      hashedPassportId: '',
+
+      reason: 'Partyabend',
+
+      startAddress: {
+        street: '',
+        houseNumber: '',
+        zipCode: '',
+        city: '',
+        country: '',
       },
-    ]
+      endAddress: {
+        street: '',
+        houseNumber: '',
+        zipCode: '',
+        city: '',
+        country: '',
+      },
+
+      validFromDateTime: new Date(),
+      validToDateTime: new Date(),
+
+      ticketStatus: 'CREATED',
+    };
   }
 }

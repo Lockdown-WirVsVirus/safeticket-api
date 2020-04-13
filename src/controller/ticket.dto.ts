@@ -1,17 +1,27 @@
-import { ITicket, IAddress } from "src/services/tickets.service";
+import { IAddress, TicketStatus, Ticket } from 'src/services/tickets.service';
 
-export class TicketDto implements ITicket {
-    id: string;
+export class TicketRequestDto {
+  passportId: string;
+  reason: string;
 
-    // owner
-    hashedPassportId: string;
-    hashedPin: string;
+  startAddress: IAddress;
+  endAddress: IAddress;
 
-    reason: string;
+  validFromDateTime: Date;
+  validToDateTime: Date;
+}
 
-    startAddress: IAddress;
-    endAddress: IAddress;
+export class TicketResponseDto implements Ticket {
+  ticketId: string;
 
-    validFromDateTime: Date;
-    validToDateTime: Date;
+  hashedPassportId: string;
+  reason: string;
+
+  startAddress: IAddress;
+  endAddress: IAddress;
+
+  validFromDateTime: Date;
+  validToDateTime: Date;
+
+  ticketStatus: TicketStatus;
 }
