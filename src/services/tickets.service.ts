@@ -4,7 +4,7 @@ import { Model } from 'mongoose';
 import { TicketResponseDto } from './../controller/ticket.dto';
 import { TicketModel } from '../schema/tickets.schema';
 
-export interface IAddress {
+interface IAddress {
   street: string;
   houseNumber: string;
   zipCode: string;
