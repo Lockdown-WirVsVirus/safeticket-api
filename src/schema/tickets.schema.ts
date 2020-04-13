@@ -3,7 +3,6 @@ import { Ticket } from 'src/services/tickets.service';
 
 export interface TicketModel extends Ticket, mongoose.Document {}
 export const ticketSchema = new mongoose.Schema({
-  ticketId: String,
   hashedPassportId: String,
 
   reason: String,
@@ -25,5 +24,18 @@ export const ticketSchema = new mongoose.Schema({
 
   validFromDateTime: Date,
   validToDateTime: Date,
+},{
+  toObject: {
+    virtuals: true
+  },
+  toJSON: {
+    virtuals: true
+  }
 });
+
+// add virtual ticketId;
+ticketSchema.virtual('ticketId').get(function() {
+  return this._id;
+})
+
 export const ticketModel = mongoose.model<TicketModel>('Tickets', ticketSchema);

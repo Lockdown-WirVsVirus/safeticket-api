@@ -3,7 +3,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { TicketModel } from '../schema/tickets.schema';
 
-export interface IAddress {
+interface IAddress {
   street: string;
   houseNumber: string;
   zipCode: string;
