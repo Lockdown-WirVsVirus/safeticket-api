@@ -35,8 +35,8 @@ describe('AppController (e2e)', () => {
     await app.close();
   }, 5_000);
 
-  it('should create and get ticket', () => {
-    const ticketRequest = {
+  it('should create and get ticket', done => {
+    const ticket = {
       passportId: 'LXXXXXXX',
       reason: 'Party',
       startAddress: {
@@ -58,7 +58,12 @@ describe('AppController (e2e)', () => {
     };
     return request(app.getHttpServer())
       .post('/api/v1/tickets')
-      .send(ticketRequest)
-      .expect(201);
+      .send(ticket)
+      .expect(201)
+      .end(function(err, res) {
+        if (err) return done(err);
+        expect(res.body.hashedPassportId).toBe('#LXXXXXXX');
+        done();
+      });
   });
 });
