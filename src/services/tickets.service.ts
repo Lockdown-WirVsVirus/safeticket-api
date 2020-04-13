@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { TicketResponseDto } from './../controller/ticket.dto';
@@ -31,12 +31,14 @@ export interface Ticket extends TicketRequest {
 
 @Injectable()
 export class TicketsService {
+  private readonly logger = new Logger(TicketsService.name);
+
   constructor(
     @InjectModel('Tickets') private ticketModel: Model<TicketModel>,
   ) {}
 
   async createTicket(ticketToCreate: TicketRequest): Promise<Ticket> {
-    // console.log('Save ticket:', ticketToCreate);
+    // this.logger.log('Save Ticket:', JSON.stringify(ticketToCreate));
 
     const createdTicket = new this.ticketModel(ticketToCreate);
     return createdTicket.save();
