@@ -1,9 +1,9 @@
 import { Controller, Get, Post, Body, Param, Logger } from '@nestjs/common';
 import {
   TicketsService,
-  IAddress as Address,
   Identity,
   Ticket,
+  Address,
   TicketStatus,
 } from '../services/tickets.service';
 import { ApiTags } from '@nestjs/swagger';
@@ -12,8 +12,8 @@ export class TicketRequestDto {
   passportId: string;
   reason: string;
 
-  startAddress: Address;
-  endAddress: Address;
+  startAddress: AddressDto;
+  endAddress: AddressDto;
 
   validFromDateTime: Date;
   validToDateTime: Date;
@@ -29,8 +29,8 @@ export class TicketResponseDto implements Ticket {
   hashedPassportId: string;
   reason: string;
 
-  startAddress: Address;
-  endAddress: Address;
+  startAddress: AddressDto;
+  endAddress: AddressDto;
 
   validFromDateTime: Date;
   validToDateTime: Date;
