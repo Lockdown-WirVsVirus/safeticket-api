@@ -7,6 +7,9 @@ const port = process.env.PORT || 3000
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
+  // cors of course
+  app.enableCors();
+
   // open api spec (Swagger)
   const options = new DocumentBuilder()
     .setTitle('SafeTicket tickets api')
