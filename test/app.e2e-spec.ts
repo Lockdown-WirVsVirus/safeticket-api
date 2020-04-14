@@ -8,6 +8,7 @@ import {
   TicketResponseDto,
 } from '../src/ticketing/controller/tickets.controller';
 import { TicketingModule } from '../src/ticketing/ticketing.module';
+import { doesNotMatch } from 'assert';
 
 describe('End-2-End Testing', () => {
   let app: INestApplication;
@@ -56,28 +57,26 @@ describe('End-2-End Testing', () => {
     validToDateTime: new Date(2020, 4, 1, 10, 0, 0), //01.04.2020 - 10:00
   };
 
-  it('should create and get ticket', done => {
-    return request(app.getHttpServer())
+  it('should create and get ticket', async () => {
+    return await request(app.getHttpServer())
       .post('/api/v1/tickets')
       .send(partyTicket)
       .expect(201)
-      .end(function(err, res) {
-        if (err) return done(err);
+      .then(res => {
         expect(res.body.hashedPassportId).toBe(hashedPassportId);
-        done();
       });
   });
 
   it(
     'search created ticket',
     async () => {
-      return request(app.getHttpServer())
+      return await request(app.getHttpServer())
         .post('/api/v1/tickets')
         .send(partyTicket)
         .expect(201)
-        .then(creationResponse => {
+        .then(async creationResponse => {
           const createdTicket: TicketResponseDto = creationResponse.body;
-          return request(app.getHttpServer())
+          return await request(app.getHttpServer())
             .get('/api/v1/tickets/' + creationResponse.body.ticketId)
             .send()
             .expect(200)
@@ -94,18 +93,19 @@ describe('End-2-End Testing', () => {
   it(
     'search all created tickets by identity',
     async () => {
-      return request(app.getHttpServer())
+      return await request(app.getHttpServer())
         .post('/api/v1/tickets')
         .send(partyTicket)
         .expect(201)
-        .then(creationResponse => {
+        .then(async creationResponse => {
           const createdTicket: TicketResponseDto = creationResponse.body;
-          return request(app.getHttpServer())
+          return await request(app.getHttpServer())
             .post('/api/v1/tickets/for/identity')
             .send({ hashedPassportId: createdTicket.hashedPassportId })
             .expect(200)
             .expect(allTicketsOfIdentityResponse => {
-              const ticketsOfIdentity: TicketResponseDto[] = allTicketsOfIdentityResponse.body;
+              const ticketsOfIdentity: TicketResponseDto[] =
+                allTicketsOfIdentityResponse.body;
               expect(ticketsOfIdentity.length).toBe(1);
               expect(ticketsOfIdentity[0]).toMatchObject(createdTicket);
             });
