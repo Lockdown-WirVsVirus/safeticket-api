@@ -89,7 +89,7 @@ export class TicketsController {
   }
 
   @HttpCode(200)
-  @Post('/identity')
+  @Post('/for/identity')
   async retrieveTicketsForIdentity(
     @Body() identity: IdentityDto,
   ): Promise<TicketResponseDto[]> {

@@ -8,7 +8,6 @@ import {
   TicketResponseDto,
 } from '../src/ticketing/controller/tickets.controller';
 import { TicketingModule } from '../src/ticketing/ticketing.module';
-import { doesNotMatch } from 'assert';
 
 describe('End-2-End Testing', () => {
   let app: INestApplication;
@@ -102,7 +101,7 @@ describe('End-2-End Testing', () => {
         .then(creationResponse => {
           const createdTicket: TicketResponseDto = creationResponse.body;
           return request(app.getHttpServer())
-            .post('/api/v1/tickets/identity')
+            .post('/api/v1/tickets/for/identity')
             .send({ hashedPassportId: createdTicket.hashedPassportId })
             .expect(200)
             .expect(allTicketsOfIdentityResponse => {
