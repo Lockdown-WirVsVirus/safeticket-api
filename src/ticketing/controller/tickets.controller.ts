@@ -49,6 +49,7 @@ export class AddressDto implements Address {
 @ApiTags('ticket')
 @Controller('api/v1/tickets')
 export class TicketsController {
+
   private readonly logger = new Logger(TicketsController.name);
 
   constructor(private readonly ticketsService: TicketsService) {}

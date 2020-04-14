@@ -1,7 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { TicketModel } from '../schema/tickets.schema';
+import { TicketModel } from './tickets.schema';
 
 export interface Address {
   street: string;

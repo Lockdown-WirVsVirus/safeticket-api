@@ -1,7 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { TicketsController, TicketRequestDto } from './tickets.controller';
 import { TicketsService, Ticket } from '../services/tickets.service';
-import { ticketModel } from '../schema/tickets.schema';
+import { ticketModel } from '../services/tickets.schema';
 import { getModelToken } from '@nestjs/mongoose';
 
 describe('TicketsController', () => {
