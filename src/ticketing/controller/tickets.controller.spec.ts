@@ -1,47 +1,62 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { TicketsController } from './tickets.controller';
+import { TicketsController, TicketRequestDto } from './tickets.controller';
+import { HashingService } from '../services/hashing.service';
 import { TicketsService, Ticket } from '../services/tickets.service';
-import { ticketModel } from '../schema/tickets.schema';
-import { TicketRequestDto } from './ticket.dto';
-import { getModelToken } from '@nestjs/mongoose';
+
+jest.mock('../services/tickets.service');
 
 describe('TicketsController', () => {
-  let controller: TicketsController;
-  let mockedTicketService: TicketsService;
+  let sut: TicketsController;
+  let ticketService: TicketsService;
 
   beforeEach(async () => {
     const app: TestingModule = await Test.createTestingModule({
       controllers: [TicketsController],
       providers: [
-        TicketsService,
-        {
-          provide: getModelToken('Tickets'),
-          useValue: ticketModel,
-        },
+        HashingService,
+        TicketsService, // mocked
       ],
     }).compile();
 
-    controller = app.get<TicketsController>(TicketsController);
-    mockedTicketService = app.get<TicketsService>(TicketsService);
+    sut = app.get<TicketsController>(TicketsController);
+    ticketService = app.get<TicketsService>(TicketsService);
 
     // Mock ticket save to db
     const mockedTicket: Ticket = {
       ticketId: 'testing',
       reason: 'simulation',
-      startAddress: { street: '', houseNumber: '', zipCode: '', city: '', country: '' },
-      endAddress: { street: '', houseNumber: '', zipCode: '', city: '', country: '' },
+      startAddress: {
+        street: '',
+        houseNumber: '',
+        zipCode: '',
+        city: '',
+        country: '',
+      },
+      endAddress: {
+        street: '',
+        houseNumber: '',
+        zipCode: '',
+        city: '',
+        country: '',
+      },
       hashedPassportId: 'wdasdsdas',
       ticketStatus: 'CREATED',
       validFromDateTime: new Date(),
       validToDateTime: new Date(),
-    }
-    jest.spyOn(mockedTicketService, 'createTicket').mockImplementation(() => Promise.resolve(mockedTicket))
+    };
+    jest
+      .spyOn(ticketService, 'createTicket')
+      .mockReturnValue(Promise.resolve(mockedTicket));
+  });
+
+  afterEach(() => {
+    jest.resetAllMocks();
   });
 
   describe('Request ticket ressource', () => {
     it('Should create a ticket', async () => {
       const ticketDto: TicketRequestDto = new TicketRequestDto();
-      const tickets = await controller.createTicket(ticketDto);
+      const tickets = await sut.createTicket(ticketDto);
 
       expect(tickets.ticketId).toBeTruthy();
       expect(tickets.reason).toBeTruthy();
