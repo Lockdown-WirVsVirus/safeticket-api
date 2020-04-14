@@ -34,7 +34,7 @@ describe('End-2-End Testing', () => {
     await app.close();
   }, timeout);
 
-  const hashedPassportId: string = '#LXXXXXXX';
+  const hashedPassportId: string = 'HASHED_LXXXXXXX';
   const partyTicket: TicketRequestDto = {
     passportId: 'LXXXXXXX',
     reason: 'Party',
@@ -81,10 +81,37 @@ describe('End-2-End Testing', () => {
             .get('/api/v1/tickets/' + creationResponse.body.ticketId)
             .send()
             .expect(200)
-            .expect(searchResponse => {
+            .expect(searchTicketResponse => {
               const sameTicketLikeCreated: TicketResponseDto =
-                searchResponse.body;
+                searchTicketResponse.body;
               expect(sameTicketLikeCreated).toMatchObject(createdTicket);
+            });
+        });
+    },
+    timeout,
+  );
+
+  it(
+    'search all created tickets by identity',
+    async () => {
+      return request(app.getHttpServer())
+        .post('/api/v1/tickets')
+        .send(partyTicket)
+        .expect(201)
+        .then(creationResponse => {
+          const createdTicket: TicketResponseDto = creationResponse.body;
+          return request(app.getHttpServer())
+            .post('/api/v1/tickets/identity')
+            .send({ hashedPassportId: createdTicket.hashedPassportId })
+            .expect(200)
+            .expect(allTicketsOfIdentityResponse => {
+              const ticketsOfIdentity: TicketResponseDto[] =
+                allTicketsOfIdentityResponse.body;
+
+              console.log('Found tickets:', ticketsOfIdentity);
+
+              expect(ticketsOfIdentity.length).toBe(1);
+              expect(ticketsOfIdentity[0]).toMatchObject(createdTicket);
             });
         });
     },
