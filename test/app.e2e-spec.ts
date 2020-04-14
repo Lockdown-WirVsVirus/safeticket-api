@@ -8,6 +8,7 @@ import {
   TicketResponseDto,
 } from '../src/ticketing/controller/tickets.controller';
 import { TicketingModule } from '../src/ticketing/ticketing.module';
+import { doesNotMatch } from 'assert';
 
 describe('End-2-End Testing', () => {
   let app: INestApplication;
@@ -105,11 +106,7 @@ describe('End-2-End Testing', () => {
             .send({ hashedPassportId: createdTicket.hashedPassportId })
             .expect(200)
             .expect(allTicketsOfIdentityResponse => {
-              const ticketsOfIdentity: TicketResponseDto[] =
-                allTicketsOfIdentityResponse.body;
-
-              console.log('Found tickets:', ticketsOfIdentity);
-
+              const ticketsOfIdentity: TicketResponseDto[] = allTicketsOfIdentityResponse.body;
               expect(ticketsOfIdentity.length).toBe(1);
               expect(ticketsOfIdentity[0]).toMatchObject(createdTicket);
             });
