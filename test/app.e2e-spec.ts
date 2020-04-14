@@ -3,12 +3,17 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { INestApplication } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import { MongoMemoryServer } from 'mongodb-memory-server';
-import { TicketRequestDto } from '../../src/ticketing/controller/tickets.controller';
-import { TicketingModule } from '../../src/ticketing/ticketing.module';
+import {
+  TicketRequestDto,
+  TicketResponseDto,
+} from '../src/ticketing/controller/tickets.controller';
+import { TicketingModule } from '../src/ticketing/ticketing.module';
 
-describe('Ticketing (e2e)', () => {
+describe('End-2-End Testing', () => {
   let app: INestApplication;
   let mongod: MongoMemoryServer;
+
+  const timeout: number = 5_000;
 
   beforeEach(async () => {
     mongod = new MongoMemoryServer();
@@ -22,12 +27,12 @@ describe('Ticketing (e2e)', () => {
 
     app = moduleFixture.createNestApplication();
     await app.init();
-  }, 5_000);
+  }, timeout);
 
   afterEach(async () => {
     await mongod.stop();
     await app.close();
-  }, 5_000);
+  }, timeout);
 
   const hashedPassportId: string = '#LXXXXXXX';
   const partyTicket: TicketRequestDto = {
@@ -63,17 +68,26 @@ describe('Ticketing (e2e)', () => {
       });
   });
 
-  it('search created ticket', async done => {
-    const creationResponse = await request(app.getHttpServer())
-      .post('/api/v1/tickets')
-      .send(partyTicket)
-      .expect(201);
-    expect(creationResponse.body.ticketId).toBeTruthy();
-    const findTicketResponse = await request(app.getHttpServer())
-      .get('/api/v1/tickets/' + creationResponse.body.ticketId)
-      .send()
-      .expect(200);
-    expect(findTicketResponse.body).toMatchObject(creationResponse);
-    done();
-  });
+  it(
+    'search created ticket',
+    async () => {
+      return request(app.getHttpServer())
+        .post('/api/v1/tickets')
+        .send(partyTicket)
+        .expect(201)
+        .then(creationResponse => {
+          const createdTicket: TicketResponseDto = creationResponse.body;
+          return request(app.getHttpServer())
+            .get('/api/v1/tickets/' + creationResponse.body.ticketId)
+            .send()
+            .expect(200)
+            .expect(searchResponse => {
+              const sameTicketLikeCreated: TicketResponseDto =
+                searchResponse.body;
+              expect(sameTicketLikeCreated).toMatchObject(createdTicket);
+            });
+        });
+    },
+    timeout,
+  );
 });

@@ -1,5 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
+import { ObjectId } from 'mongodb';
 import { Model } from 'mongoose';
 import { TicketModel } from './tickets.schema';
 
@@ -61,8 +62,10 @@ export class TicketsService {
    * @param searchTicketId the ticket id of ticket to search
    */
   async findTicket(searchTicketId: string): Promise<Ticket> {
-    return this.ticketModel.findOne({
-      ticketId: searchTicketId,
+    const foundTicket: Ticket = await this.ticketModel.findOne({
+      _id: new ObjectId(searchTicketId),
     });
+
+    return foundTicket;
   }
 }
