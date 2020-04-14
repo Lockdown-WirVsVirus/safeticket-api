@@ -1,25 +1,20 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { TicketModel } from "./../schema/tickets.schema";
-import { Model, Types } from "mongoose";
-import { TicketDto } from "./../controller/ticket.dto";
+import { Model } from 'mongoose';
+import { TicketResponseDto } from './../controller/ticket.dto';
+import { TicketModel } from '../schema/tickets.schema';
 
-
-export interface IAddress {
+interface IAddress {
   street: string;
   houseNumber: string;
   zipCode: string;
   city: string;
   country: string;
 }
+export type TicketStatus = 'CREATED' | 'EXPIRED' | 'DECLINED';
 
-export interface ITicket {
-  id: string;
-
-  // owner
+export interface TicketRequest {
   hashedPassportId: string;
-  hashedPin: string;
-
   reason: string;
 
   startAddress: IAddress;
@@ -29,14 +24,24 @@ export interface ITicket {
   validToDateTime: Date;
 }
 
+export interface Ticket extends TicketRequest {
+  ticketId: string;
+  ticketStatus: TicketStatus;
+}
 
 @Injectable()
 export class TicketsService {
-  constructor(@InjectModel('Tickets') private ticketModel: Model<TicketModel>) { }
+  private readonly logger = new Logger(TicketsService.name);
 
-  async createTicket(createTicketDTO: TicketDto): Promise<ITicket> {
-    const createdTicket = new this.ticketModel(createTicketDTO);
-    return await createdTicket.save();
+  constructor(
+    @InjectModel('Tickets') private ticketModel: Model<TicketModel>,
+  ) {}
+
+  async createTicket(ticketToCreate: TicketRequest): Promise<Ticket> {
+    // this.logger.log('Save Ticket:', JSON.stringify(ticketToCreate));
+
+    const createdTicket = new this.ticketModel(ticketToCreate);
+    return createdTicket.save();
   }
 
   async deleteTicket(deleteTicketDTO: TicketDto): Promise<String> {
@@ -54,34 +59,33 @@ export class TicketsService {
     return "Delete ticket";
   }
 
-  getAllTickets(): ITicket[] {
-    return [
-      {
-        id: "007",
+  getTicket(ticketId: String): TicketResponseDto {
+    return {
+      ticketId: '007',
 
-        hashedPassportId: "",
-        hashedPin: "",
+      hashedPassportId: '',
 
-        reason: "Partyabend",
+      reason: 'Partyabend',
 
-        startAddress: {
-          street: "",
-          houseNumber: "",
-          zipCode: "",
-          city: "",
-          country: ""
-        },
-        endAddress: {
-          street: "",
-          houseNumber: "",
-          zipCode: "",
-          city: "",
-          country: ""
-        },
-
-        validFromDateTime: new Date(),
-        validToDateTime: new Date(),
+      startAddress: {
+        street: '',
+        houseNumber: '',
+        zipCode: '',
+        city: '',
+        country: '',
       },
-    ]
+      endAddress: {
+        street: '',
+        houseNumber: '',
+        zipCode: '',
+        city: '',
+        country: '',
+      },
+
+      validFromDateTime: new Date(),
+      validToDateTime: new Date(),
+
+      ticketStatus: 'CREATED',
+    };
   }
 }
