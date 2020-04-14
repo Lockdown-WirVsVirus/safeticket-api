@@ -45,7 +45,7 @@ describe('TicketsController', () => {
       validToDateTime: new Date(),
     };
     jest
-      .spyOn(ticketService, 'createTicket')
+      .spyOn(ticketService, 'createNewTicket')
       .mockReturnValue(Promise.resolve(mockedTicket));
   });
 

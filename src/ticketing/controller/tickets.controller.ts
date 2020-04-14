@@ -69,7 +69,7 @@ export class TicketsController {
   async createTicket(
     @Body() ticketDto: TicketRequestDto,
   ): Promise<TicketResponseDto> {
-    return this.ticketsService.createTicket({
+    return this.ticketsService.createNewTicket({
       hashedPassportId: this.hashingService.hashPassportId(
         ticketDto.passportId,
       ),

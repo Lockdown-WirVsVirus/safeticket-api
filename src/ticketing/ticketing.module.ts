@@ -2,12 +2,14 @@ import { Module } from '@nestjs/common';
 import { TicketsController } from './controller/tickets.controller';
 import { TicketsService } from './services/tickets.service';
 import { MongooseModule } from '@nestjs/mongoose';
-import { ticketSchema } from './services/tickets.schema';
+import { ticketSchema, tickedModelName as ticketModelName } from './services/tickets.schema';
 import { HashingService } from './services/hashing.service';
 
 @Module({
   imports: [
-    MongooseModule.forFeature([{ name: 'Tickets', schema: ticketSchema }]),
+    MongooseModule.forFeature([
+      { name: ticketModelName, schema: ticketSchema },
+    ]),
   ],
   controllers: [TicketsController],
   providers: [TicketsService, HashingService],

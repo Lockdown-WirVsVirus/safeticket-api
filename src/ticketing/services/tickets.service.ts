@@ -2,7 +2,10 @@ import { Injectable, Logger } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { ObjectId } from 'mongodb';
 import { Model } from 'mongoose';
-import { TicketModel } from './tickets.schema';
+import {
+  TicketModel,
+  tickedModelName as TickedModelName,
+} from './tickets.schema';
 
 export interface Address {
   street: string;
@@ -37,14 +40,17 @@ export class TicketsService {
   private readonly logger = new Logger(TicketsService.name);
 
   constructor(
-    @InjectModel('Tickets') private ticketModel: Model<TicketModel>,
+    @InjectModel(TickedModelName) private ticketModel: Model<TicketModel>,
   ) {}
 
   /**
    *Creates a new ticket by given request.
    * @param ticketToCreate the new ticket to create.
    */
-  async createTicket(ticketToCreate: TicketRequest): Promise<Ticket> {
+  async createNewTicket(ticketToCreate: TicketRequest): Promise<Ticket> {
+    //TODO check here if already created
+
+    this.logger.log(`Save new ticket for: ${ticketToCreate.hashedPassportId}`);
     return new this.ticketModel(ticketToCreate).save();
   }
 
@@ -53,6 +59,8 @@ export class TicketsService {
    * @param searchedHashedPasswordId hashed passwort id to search for tickets
    */
   async retrieveByIdentity(identity: Identity): Promise<Ticket[]> {
+    this.logger.debug(`retrieve all tickets for identity:${identity}`);
+
     return this.ticketModel.find({
       hashedPassportId: identity.hashedPassportId,
     });
@@ -62,6 +70,7 @@ export class TicketsService {
    * @param searchTicketId the ticket id of ticket to search
    */
   async findTicket(searchTicketId: string): Promise<Ticket> {
+    this.logger.debug(`Find ticket with id :${searchTicketId}`);
     const foundTicket: Ticket = await this.ticketModel.findOne({
       _id: new ObjectId(searchTicketId),
     });
