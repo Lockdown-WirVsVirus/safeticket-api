@@ -3,6 +3,7 @@ import { Ticket } from 'src/services/tickets.service';
 
 export interface TicketModel extends Ticket, mongoose.Document {}
 export const ticketSchema = new mongoose.Schema({
+  
   hashedPassportId: String,
 
   reason: String,

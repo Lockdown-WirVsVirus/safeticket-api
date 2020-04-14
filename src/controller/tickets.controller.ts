@@ -42,8 +42,7 @@ export class TicketsController {
   }
 
   @Post("deleteTickets")
-  async deleteTicket(@Body() ticketDto: TicketDto): Promise<String>{
-    console.log
-    return this.ticketsService.deleteTicket(ticketDto);
+  async deleteTicket(@Body() id: String): Promise<String>{
+    return this.ticketsService.deleteTicket(id);
   }
 }

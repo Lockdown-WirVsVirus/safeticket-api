@@ -1,7 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { TicketResponseDto } from './../controller/ticket.dto';
+import { TicketResponseDto} from './../controller/ticket.dto';
 import { TicketModel } from '../schema/tickets.schema';
 
 interface IAddress {
@@ -44,13 +44,13 @@ export class TicketsService {
     return createdTicket.save();
   }
 
-  async deleteTicket(deleteTicketDTO: TicketDto): Promise<String> {
-    if (!deleteTicketDTO.id) {
+  async deleteTicket(ticketID: String): Promise<String> {
+    if (!ticketID) {
       return "id is empty";
     }
 
     let result = await this.ticketModel.deleteOne({
-      id: deleteTicketDTO.id
+      id: ticketID //TODO: right field?
     })
 
     if (result.n == 0) {

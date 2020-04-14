@@ -49,4 +49,13 @@ describe('TicketsController', () => {
       expect(tickets.ticketStatus).toBe('CREATED');
     });
   });
+
+  describe('Cant remove ticket, because id is empty', () => {
+    it('String with error message "Id is empty"', async () => {
+      const tickets = await controller.deleteTicket(null);
+      expect(tickets).toBe("id is empty");
+    });
+  });
+
+
 });
