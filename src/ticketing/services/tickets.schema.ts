@@ -1,5 +1,5 @@
 import * as mongoose from 'mongoose';
-import { Ticket } from 'src/services/tickets.service';
+import { Ticket } from './tickets.service';
 
 export interface TicketModel extends Ticket, mongoose.Document {}
 export const ticketSchema = new mongoose.Schema({
