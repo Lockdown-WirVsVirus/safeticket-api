@@ -3,12 +3,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { INestApplication } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import { MongoMemoryServer } from 'mongodb-memory-server';
-import {
-  TicketRequestDto,
-  TicketResponseDto,
-} from '../src/ticketing/controller/tickets.controller';
 import { TicketingModule } from '../src/ticketing/ticketing.module';
-import { doesNotMatch } from 'assert';
 
 describe('End-2-End Testing', () => {
   let app: INestApplication;
@@ -36,7 +31,7 @@ describe('End-2-End Testing', () => {
   }, timeout);
 
   const hashedPassportId: string = 'HASHED_LXXXXXXX';
-  const partyTicket: TicketRequestDto = {
+  const partyTicket = {
     passportId: 'LXXXXXXX',
     reason: 'Party',
     startAddress: {
@@ -53,8 +48,8 @@ describe('End-2-End Testing', () => {
       city: 'Stadt',
       country: 'Germany',
     },
-    validFromDateTime: new Date(2020, 4, 1, 8, 0, 0), //01.04.2020 - 08:00
-    validToDateTime: new Date(2020, 4, 1, 10, 0, 0), //01.04.2020 - 10:00
+    validFromDateTime: '2020-04-01T08:00:00.000Z',
+    validToDateTime: '2020-04-01T10:00:00.000Z',
   };
 
   it('should create and get ticket', async () => {
@@ -75,14 +70,13 @@ describe('End-2-End Testing', () => {
         .send(partyTicket)
         .expect(201)
         .then(async creationResponse => {
-          const createdTicket: TicketResponseDto = creationResponse.body;
+          const createdTicket = creationResponse.body;
           return await request(app.getHttpServer())
             .get('/api/v1/tickets/' + creationResponse.body.ticketId)
             .send()
             .expect(200)
             .expect(searchTicketResponse => {
-              const sameTicketLikeCreated: TicketResponseDto =
-                searchTicketResponse.body;
+              const sameTicketLikeCreated = searchTicketResponse.body;
               expect(sameTicketLikeCreated).toMatchObject(createdTicket);
             });
         });
@@ -98,16 +92,15 @@ describe('End-2-End Testing', () => {
         .send(partyTicket)
         .expect(201)
         .then(async creationResponse => {
-          const createdTicket: TicketResponseDto = creationResponse.body;
+          const createdTicket = creationResponse.body;
           return await request(app.getHttpServer())
             .post('/api/v1/tickets/for/identity')
             .send({ hashedPassportId: createdTicket.hashedPassportId })
             .expect(200)
             .expect(allTicketsOfIdentityResponse => {
-              const ticketsOfIdentity: TicketResponseDto[] =
-                allTicketsOfIdentityResponse.body;
+              const ticketsOfIdentity = allTicketsOfIdentityResponse.body;
               expect(ticketsOfIdentity.length).toBe(1);
-              expect(ticketsOfIdentity[0]).toMatchObject(createdTicket);
+              expect(ticketsOfIdentity[0]).toMatchObject({ createdTicket });
             });
         });
     },
