@@ -2,6 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { HashingService } from './hashing.service';
 
 describe('HashingService', () => {
+
   let service: HashingService;
 
   beforeEach(async () => {
@@ -12,11 +13,11 @@ describe('HashingService', () => {
     service = module.get<HashingService>(HashingService);
   });
 
-  it('should be defined', () => {
+  it('hahsing service should be defined', () => {
     expect(service).toBeDefined();
   });
 
-  it('should hash', () => {
+  it('should hash given passport id', () => {
     expect(service.hashPassportId('Ironman')).toBe('HASHED_Ironman');
   });
 
