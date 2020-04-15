@@ -68,4 +68,21 @@ export class TicketsService {
 
     return foundTicket;
   }
+
+  async deleteTicket(ticketid: string): Promise<String> {
+    if (!ticketid || ticketid == undefined) {
+      return "id is empty";
+    }
+
+    let result = await this.ticketModel.deleteOne({
+      _id: new ObjectId(ticketid),
+    })
+
+    if (result.n == 0) {
+      return "No tickets with this id";
+    }
+    return "Delete ticket";
+  }
+
+  
 }

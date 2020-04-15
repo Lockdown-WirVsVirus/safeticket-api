@@ -67,7 +67,7 @@ describe('TicketsController', () => {
 
   describe('Cant remove ticket, because id is empty', () => {
     it('String with error message "Id is empty"', async () => {
-      const tickets = await controller.deleteTicket(null);
+      const tickets = await sut.deleteTicket("test");
       expect(tickets).toBe("id is empty");
     });
   });

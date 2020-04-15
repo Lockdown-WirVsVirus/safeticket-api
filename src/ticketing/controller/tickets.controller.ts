@@ -95,4 +95,9 @@ export class TicketsController {
   ): Promise<TicketResponseDto[]> {
     return this.ticketsService.retrieveByIdentity(identity);
   }
+
+  @Post("deleteTickets")
+  async deleteTicket(@Body() ticketId: string): Promise<String>{
+    return this.ticketsService.deleteTicket(ticketId);
+  }
 }
