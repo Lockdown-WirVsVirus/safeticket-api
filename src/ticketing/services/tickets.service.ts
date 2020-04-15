@@ -3,6 +3,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { ObjectId } from 'mongodb';
 import { Model } from 'mongoose';
 import { TicketModel } from './tickets.schema';
+import { TicketIDDTO } from '../controller/tickets.controller';
 
 export interface Address {
   street: string;
@@ -15,6 +16,10 @@ export type TicketStatus = 'CREATED' | 'EXPIRED' | 'DECLINED';
 
 export interface Identity {
   hashedPassportId: string;
+}
+
+export interface ITicketID{
+  ticketID : string,
 }
 
 export interface TicketRequest extends Identity {
@@ -69,13 +74,13 @@ export class TicketsService {
     return foundTicket;
   }
 
-  async deleteTicket(ticketid: string): Promise<String> {
-    if (!ticketid || ticketid == undefined) {
+  async deleteTicket(ticketid: TicketIDDTO): Promise<String> {
+    if (!ticketid.ticketID) {
       return "id is empty";
     }
 
     let result = await this.ticketModel.deleteOne({
-      _id: new ObjectId(ticketid),
+      hashedPassportId : ticketid.ticketID,
     })
 
     if (result.n == 0) {

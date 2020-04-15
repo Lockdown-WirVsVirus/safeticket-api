@@ -100,10 +100,66 @@ describe('End-2-End Testing', () => {
             .expect(allTicketsOfIdentityResponse => {
               const ticketsOfIdentity = allTicketsOfIdentityResponse.body;
               expect(ticketsOfIdentity.length).toBe(1);
-              expect(ticketsOfIdentity[0]).toMatchObject( createdTicket );
+              expect(ticketsOfIdentity[0]).toMatchObject(createdTicket);
             });
         });
     },
     timeout,
   );
+  
+  it(
+    'delete ticket failed, because ticketid is null',
+    async () => {
+      return await request(app.getHttpServer())
+        .post('/api/v1/tickets')
+        .send(partyTicket)
+        .expect(201)
+        .then(async () => {
+          return await request(app.getHttpServer())
+            .post('/api/v1/tickets/deleteTicket')
+            .send({ ticketID: null })
+            .expect(200)
+            .expect(allTicketsOfIdentityResponse => {
+              expect(allTicketsOfIdentityResponse.text).toBe("id is empty");
+            });
+        });
+    })
+
+  it(
+    'delete ticket failed, because ticketid is wrong',
+    async () => {
+      return await request(app.getHttpServer())
+        .post('/api/v1/tickets')
+        .send(partyTicket)
+        .expect(201)
+        .then(async () => {
+          return await request(app.getHttpServer())
+            .post('/api/v1/tickets/deleteTicket')
+            .send({ ticketID: "test" })
+            .expect(200)
+            .expect(allTicketsOfIdentityResponse => {
+              expect(allTicketsOfIdentityResponse.text).toBe("No tickets with this id");
+            });
+        });
+    })
+
+  it(
+    'delete ticket',
+    async () => {
+      return await request(app.getHttpServer())
+        .post('/api/v1/tickets')
+        .send(partyTicket)
+        .expect(201)
+        .then(async creationResponse => {
+          const createdTicket = creationResponse.body;
+          return await request(app.getHttpServer())
+            .post('/api/v1/tickets/deleteTicket')
+            .send({ ticketID: createdTicket.hashedPassportId })
+            .expect(200)
+            .expect(allTicketsOfIdentityResponse => {
+              expect(allTicketsOfIdentityResponse.text).toBe("Delete ticket");
+            });
+        });
+    })
+
 });

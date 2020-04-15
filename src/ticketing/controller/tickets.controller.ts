@@ -14,6 +14,7 @@ import {
   Ticket,
   Address,
   TicketStatus,
+  ITicketID,
 } from '../services/tickets.service';
 import { HashingService } from '../services/hashing.service';
 
@@ -26,6 +27,10 @@ export class TicketRequestDto {
 
   validFromDateTime: Date;
   validToDateTime: Date;
+}
+
+export class TicketIDDTO implements ITicketID{
+  ticketID: string;
 }
 
 export class IdentityDto implements Identity {
@@ -96,8 +101,9 @@ export class TicketsController {
     return this.ticketsService.retrieveByIdentity(identity);
   }
 
-  @Post("deleteTickets")
-  async deleteTicket(@Body() ticketId: string): Promise<String>{
+  @HttpCode(200)
+  @Post("deleteTicket")
+  async deleteTicket(@Body() ticketId: TicketIDDTO): Promise<String>{
     return this.ticketsService.deleteTicket(ticketId);
   }
 }
