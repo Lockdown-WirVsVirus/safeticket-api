@@ -100,7 +100,7 @@ describe('End-2-End Testing', () => {
             .expect(allTicketsOfIdentityResponse => {
               const ticketsOfIdentity = allTicketsOfIdentityResponse.body;
               expect(ticketsOfIdentity.length).toBe(1);
-              expect(ticketsOfIdentity[0]).toMatchObject( createdTicket );
+              expect(ticketsOfIdentity[0]).toMatchObject(createdTicket);
             });
         });
     },

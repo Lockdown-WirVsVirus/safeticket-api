@@ -19,5 +19,4 @@ describe('HashingService', () => {
   it('should hash', () => {
     expect(service.hashPassportId('Ironman')).toBe('HASHED_Ironman');
   });
-
 });
