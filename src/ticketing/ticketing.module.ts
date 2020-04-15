@@ -6,11 +6,11 @@ import { ticketSchema } from './services/tickets.schema';
 import { HashingService } from './services/hashing.service';
 
 @Module({
-  imports: [
-    MongooseModule.forFeature([{ name: 'Tickets', schema: ticketSchema }]),
-  ],
-  controllers: [TicketsController],
-  providers: [TicketsService, HashingService],
-  exports: [TicketsService, HashingService],
+    imports: [
+        MongooseModule.forFeature([{ name: 'Tickets', schema: ticketSchema }]),
+    ],
+    controllers: [TicketsController],
+    providers: [TicketsService, HashingService],
+    exports: [TicketsService, HashingService],
 })
 export class TicketingModule {}

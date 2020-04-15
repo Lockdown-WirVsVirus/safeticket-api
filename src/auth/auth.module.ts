@@ -12,28 +12,25 @@ import { ConfigService } from '@nestjs/config';
         // loading JwtModule async to have access to process.env via ConfigService
         JwtModule.registerAsync({
             useFactory: async (configService: ConfigService) => ({
-              secret: configService.get<string>('JWT_SECRET') || "ShVmYq3t6w9y$B&E)H@McQfTjWnZr4u7",
+                secret:
+                    configService.get<string>('JWT_SECRET') ||
+                    'ShVmYq3t6w9y$B&E)H@McQfTjWnZr4u7',
             }),
             inject: [ConfigService],
-          }),
+        }),
         // TODO: move HashingService
         TicketingModule,
     ],
-    providers: [
-        AuthService,
-    ],
-    exports: [
-        AuthService
-    ],
-    controllers: [AuthController]
-  })
-  export class AuthModule {
-
+    providers: [AuthService],
+    exports: [AuthService],
+    controllers: [AuthController],
+})
+export class AuthModule {
     private readonly logger = new Logger(AuthModule.name);
 
     constructor() {
         if (!process.env.JWT_SECRET) {
-            this.logger.warn("no JWT_SECRET found.")
+            this.logger.warn('no JWT_SECRET found.');
         }
     }
-  }
+}

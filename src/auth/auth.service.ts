@@ -8,27 +8,27 @@ export interface IGenerateTokenPayload {
 export interface IJwtTokenPayload {
     token: string;
     jwtPayload: {
-        hashedPassportId
-    }
+        hashedPassportId;
+    };
 }
 
 @Injectable()
 export class AuthService {
-  constructor(
-    private jwtService: JwtService,
-    private hashingService: HashingService,
-  ) {}
+    constructor(
+        private jwtService: JwtService,
+        private hashingService: HashingService,
+    ) {}
 
-  generateToken(payload: IGenerateTokenPayload): IJwtTokenPayload {
-    const {passportId, ...other} = payload;
-    const hashedPassportId = this.hashingService.hashPassportId(passportId);
-    const jwtPayload = {
-        hashedPassportId,
-        ...other
-    };
-    return {
-      token: this.jwtService.sign(jwtPayload),
-      jwtPayload,
-    };
-  }
+    generateToken(payload: IGenerateTokenPayload): IJwtTokenPayload {
+        const { passportId, ...other } = payload;
+        const hashedPassportId = this.hashingService.hashPassportId(passportId);
+        const jwtPayload = {
+            hashedPassportId,
+            ...other,
+        };
+        return {
+            token: this.jwtService.sign(jwtPayload),
+            jwtPayload,
+        };
+    }
 }

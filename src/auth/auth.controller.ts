@@ -17,7 +17,6 @@ export class JwtTokenDto {
 
 @Controller('api/v1/auth')
 export class AuthController {
-
     constructor(private readonly authService: AuthService) {}
 
     @Post('token')
