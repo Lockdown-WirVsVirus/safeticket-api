@@ -75,10 +75,13 @@ export class TicketsService {
   }
 
   async deleteTicket(ticketid: TicketIDDTO): Promise<String> {
+    // TODO: use Validationpipe
+
     if (!ticketid.ticketID) {
       return "id is empty";
     }
 
+    //TODO: DOnt delete. change Status
     let result = await this.ticketModel.deleteOne({
       hashedPassportId : ticketid.ticketID,
     })
