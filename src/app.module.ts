@@ -7,7 +7,8 @@ import { AuthModule } from './auth/auth.module';
 @Module({
     imports: [
         ConfigModule.forRoot({
-            isGlobal: true,
+            // if a variable is found in multiple files, the first one takes precedence.
+            envFilePath: ['.env.local', '.env'],
         }),
         MongooseModule.forRoot(process.env.MONGODB_URI),
         TicketingModule,

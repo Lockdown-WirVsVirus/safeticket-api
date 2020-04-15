@@ -2,3 +2,6 @@ node_modules
 dist
 .vscode/launch.json
 .editorconfig
+
+# ignore .env.local but keep .env
+.env.local
