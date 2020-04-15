@@ -4,6 +4,8 @@ import { INestApplication } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import { MongoMemoryServer } from 'mongodb-memory-server';
 import { TicketingModule } from '../src/ticketing/ticketing.module';
+import { AuthModule } from '../src/auth/auth.module';
+import { ConfigModule } from '@nestjs/config';
 
 describe('End-2-End Testing', () => {
     let app: INestApplication;
@@ -18,7 +20,14 @@ describe('End-2-End Testing', () => {
         console.log('** start in memory mongodb: ', await mongod.getDbName());
 
         const moduleFixture: TestingModule = await Test.createTestingModule({
-            imports: [MongooseModule.forRoot(uri), TicketingModule],
+            imports: [
+                ConfigModule.forRoot({
+                    isGlobal: true,
+                }),
+                MongooseModule.forRoot(uri),
+                AuthModule,
+                TicketingModule,
+            ],
         }).compile();
 
         app = moduleFixture.createNestApplication();
@@ -52,68 +61,93 @@ describe('End-2-End Testing', () => {
         validToDateTime: '2020-04-01T10:00:00.000Z',
     };
 
-    it('should create and get ticket', async () => {
-        return await request(app.getHttpServer())
-            .post('/api/v1/tickets')
-            .send(partyTicket)
-            .expect(201)
-            .then(res => {
-                expect(res.body.hashedPassportId).toBe(hashedPassportId);
-            });
+    describe('Ticketing', () => {
+        it('should create and get ticket', async () => {
+            return await request(app.getHttpServer())
+                .post('/api/v1/tickets')
+                .send(partyTicket)
+                .expect(201)
+                .then(res => {
+                    expect(res.body.hashedPassportId).toBe(hashedPassportId);
+                });
+        });
+
+        it(
+            'search created ticket',
+            async () => {
+                return await request(app.getHttpServer())
+                    .post('/api/v1/tickets')
+                    .send(partyTicket)
+                    .expect(201)
+                    .then(async creationResponse => {
+                        const createdTicket = creationResponse.body;
+                        return await request(app.getHttpServer())
+                            .get(
+                                '/api/v1/tickets/' +
+                                    creationResponse.body.ticketId,
+                            )
+                            .send()
+                            .expect(200)
+                            .expect(searchTicketResponse => {
+                                const sameTicketLikeCreated =
+                                    searchTicketResponse.body;
+                                expect(sameTicketLikeCreated).toMatchObject(
+                                    createdTicket,
+                                );
+                            });
+                    });
+            },
+            timeout,
+        );
+
+        it(
+            'search all created tickets by identity',
+            async () => {
+                return await request(app.getHttpServer())
+                    .post('/api/v1/tickets')
+                    .send(partyTicket)
+                    .expect(201)
+                    .then(async creationResponse => {
+                        const createdTicket = creationResponse.body;
+                        return await request(app.getHttpServer())
+                            .post('/api/v1/tickets/for/identity')
+                            .send({
+                                hashedPassportId:
+                                    createdTicket.hashedPassportId,
+                            })
+                            .expect(200)
+                            .expect(allTicketsOfIdentityResponse => {
+                                const ticketsOfIdentity =
+                                    allTicketsOfIdentityResponse.body;
+                                expect(ticketsOfIdentity.length).toBe(1);
+                                expect(ticketsOfIdentity[0]).toMatchObject(
+                                    createdTicket,
+                                );
+                            });
+                    });
+            },
+            timeout,
+        );
     });
 
-    it(
-        'search created ticket',
-        async () => {
-            return await request(app.getHttpServer())
-                .post('/api/v1/tickets')
-                .send(partyTicket)
-                .expect(201)
-                .then(async creationResponse => {
-                    const createdTicket = creationResponse.body;
-                    return await request(app.getHttpServer())
-                        .get(
-                            '/api/v1/tickets/' + creationResponse.body.ticketId,
-                        )
-                        .send()
-                        .expect(200)
-                        .expect(searchTicketResponse => {
-                            const sameTicketLikeCreated =
-                                searchTicketResponse.body;
-                            expect(sameTicketLikeCreated).toMatchObject(
-                                createdTicket,
-                            );
-                        });
-                });
-        },
-        timeout,
-    );
-
-    it(
-        'search all created tickets by identity',
-        async () => {
-            return await request(app.getHttpServer())
-                .post('/api/v1/tickets')
-                .send(partyTicket)
-                .expect(201)
-                .then(async creationResponse => {
-                    const createdTicket = creationResponse.body;
-                    return await request(app.getHttpServer())
-                        .post('/api/v1/tickets/for/identity')
-                        .send({
-                            hashedPassportId: createdTicket.hashedPassportId,
-                        })
-                        .expect(200)
-                        .expect(allTicketsOfIdentityResponse => {
-                            const ticketsOfIdentity =
-                                allTicketsOfIdentityResponse.body;
-                            expect(ticketsOfIdentity.length).toBe(1);
-                            expect(ticketsOfIdentity[0]).toMatchObject(
-                                createdTicket,
-                            );
-                        });
-                });
-        },
-        timeout,
-    );
+    describe('Auth', () => {
+        it(
+            'should create jwt',
+            async () => {
+                return await request(app.getHttpServer())
+                    .post('/api/v1/auth/token')
+                    .send({
+                        passportId: 'LXXXXX',
+                    })
+                    .expect(201)
+                    .expect(tokenResponse => {
+                        expect(tokenResponse.body.token).toBeTruthy();
+                        expect(
+                            tokenResponse.body.jwtPayload.hashedPassportId,
+                        ).toBeTruthy();
+                    });
+            },
+            timeout,
+        );
+    });
 });
