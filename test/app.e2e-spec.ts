@@ -6,6 +6,7 @@ import { MongoMemoryServer } from 'mongodb-memory-server';
 import { TicketingModule } from '../src/ticketing/ticketing.module';
 import { AuthModule } from '../src/auth/auth.module';
 import { ConfigModule } from '@nestjs/config';
+import { JwtService } from '@nestjs/jwt';
 
 describe('End-2-End Testing', () => {
     let app: INestApplication;
@@ -22,7 +23,7 @@ describe('End-2-End Testing', () => {
         const moduleFixture: TestingModule = await Test.createTestingModule({
             imports: [
                 ConfigModule.forRoot({
-                    isGlobal: true,
+                    envFilePath: ['.env.test'],
                 }),
                 MongooseModule.forRoot(uri),
                 AuthModule,
@@ -82,18 +83,12 @@ describe('End-2-End Testing', () => {
                     .then(async creationResponse => {
                         const createdTicket = creationResponse.body;
                         return await request(app.getHttpServer())
-                            .get(
-                                '/api/v1/tickets/' +
-                                    creationResponse.body.ticketId,
-                            )
+                            .get('/api/v1/tickets/' + creationResponse.body.ticketId)
                             .send()
                             .expect(200)
                             .expect(searchTicketResponse => {
-                                const sameTicketLikeCreated =
-                                    searchTicketResponse.body;
-                                expect(sameTicketLikeCreated).toMatchObject(
-                                    createdTicket,
-                                );
+                                const sameTicketLikeCreated = searchTicketResponse.body;
+                                expect(sameTicketLikeCreated).toMatchObject(createdTicket);
                             });
                     });
             },
@@ -112,17 +107,13 @@ describe('End-2-End Testing', () => {
                         return await request(app.getHttpServer())
                             .post('/api/v1/tickets/for/identity')
                             .send({
-                                hashedPassportId:
-                                    createdTicket.hashedPassportId,
+                                hashedPassportId: createdTicket.hashedPassportId,
                             })
                             .expect(200)
                             .expect(allTicketsOfIdentityResponse => {
-                                const ticketsOfIdentity =
-                                    allTicketsOfIdentityResponse.body;
+                                const ticketsOfIdentity = allTicketsOfIdentityResponse.body;
                                 expect(ticketsOfIdentity.length).toBe(1);
-                                expect(ticketsOfIdentity[0]).toMatchObject(
-                                    createdTicket,
-                                );
+                                expect(ticketsOfIdentity[0]).toMatchObject(createdTicket);
                             });
                     });
             },
@@ -142,9 +133,15 @@ describe('End-2-End Testing', () => {
                     .expect(201)
                     .expect(tokenResponse => {
                         expect(tokenResponse.body.token).toBeTruthy();
-                        expect(
-                            tokenResponse.body.jwtPayload.hashedPassportId,
-                        ).toBeTruthy();
+                        expect(tokenResponse.body.jwtPayload.hashedPassportId).toBeTruthy();
+                        // validate signature against process.env from .env.test
+                        const jwtServiceUtil = new JwtService({ secret: process.env.JWT_SECRET });
+                        const verified = jwtServiceUtil.verify(tokenResponse.body.token);
+                        expect(verified).toBeTruthy();
+                        // decode jwt and check payload
+                        const decoded = jwtServiceUtil.decode(tokenResponse.body.token);
+                        expect(decoded).toBeTruthy();
+                        expect(decoded['hashedPassportId']).toBe(tokenResponse.body.jwtPayload.hashedPassportId);
                     });
             },
             timeout,
