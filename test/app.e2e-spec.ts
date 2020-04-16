@@ -123,7 +123,7 @@ describe('End-2-End Testing', () => {
 
     describe('Auth', () => {
         it(
-            'should create jwt',
+            'should create jwt and use it',
             async () => {
                 await request(app.getHttpServer())
                     .post('/api/v1/auth/token')
@@ -131,17 +131,26 @@ describe('End-2-End Testing', () => {
                         passportId: 'LXXXXX',
                     })
                     .expect(201)
-                    .expect(tokenResponse => {
-                        expect(tokenResponse.body.token).toBeTruthy();
+                    .expect(async tokenResponse => {
+                        const jwt = tokenResponse.body.token;
+                        expect(jwt).toBeTruthy();
                         expect(tokenResponse.body.jwtPayload.hashedPassportId).toBeTruthy();
                         // validate signature against process.env from .env.test
                         const jwtServiceUtil = new JwtService({ secret: process.env.JWT_SECRET });
-                        const verified = jwtServiceUtil.verify(tokenResponse.body.token);
+                        const verified = jwtServiceUtil.verify(jwt);
                         expect(verified).toBeTruthy();
-                        // decode jwt and check payload
-                        const decoded = jwtServiceUtil.decode(tokenResponse.body.token);
-                        expect(decoded).toBeTruthy();
-                        expect(decoded['hashedPassportId']).toBe(tokenResponse.body.jwtPayload.hashedPassportId);
+                        expect(verified.hashedPassportId).toBe(tokenResponse.body.jwtPayload.hashedPassportId);
+
+                        // use token to access secured controller
+                        return await request(app.getHttpServer())
+                            .get('/api/v1/auth/test')
+                            .auth(jwt, { type: 'bearer' })
+                            .expect(200)
+                            .expect(testResponse => {
+                                expect(testResponse.body.auth).toBe(true);
+                                expect(testResponse.body.user.hashedPassportId).toBe(verified.hashedPassportId);
+                                expect(testResponse.body.user.hashedPassportId).toBe(tokenResponse.body.jwtPayload.hashedPassportId);
+                            });
                     });
             },
             timeout,

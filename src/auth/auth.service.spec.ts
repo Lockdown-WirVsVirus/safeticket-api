@@ -1,4 +1,3 @@
-import { Test, TestingModule } from '@nestjs/testing';
 import { AuthService } from './auth.service';
 import { HashingService } from '../ticketing/services/hashing.service';
 import { JwtService } from '@nestjs/jwt';
@@ -7,6 +6,7 @@ describe('AuthService', () => {
     // mock dependent services
     const jwtService: JwtService = new JwtService({});
     const hashingService: HashingService = new HashingService();
+
     jest.spyOn(jwtService, 'sign').mockReturnValue('123.abc.xyz');
     jest.spyOn(hashingService, 'hashPassportId').mockImplementation((passportId: string) => Promise.resolve('#' + passportId));
 
@@ -21,7 +21,7 @@ describe('AuthService', () => {
         expect(jwtService.sign('x')).toBe('123.abc.xyz');
     });
 
-    it('should generate token', () => {
+    it('should generate token', async () => {
         const input = { passportId: 'X' };
         const expected = {
             token: '123.abc.xyz',
@@ -29,6 +29,6 @@ describe('AuthService', () => {
                 hashedPassportId: '#X',
             },
         };
-        expect(service.generateToken(input)).toEqual(expected);
+        expect(await service.generateToken(input)).toEqual(expected);
     });
 });
