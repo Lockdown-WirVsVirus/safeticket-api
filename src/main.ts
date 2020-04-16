@@ -7,7 +7,7 @@ const port = process.env.PORT || 3000;
 
 async function bootstrap() {
     const app = await NestFactory.create(AppModule, {
-        logger: ['error', 'warn', 'log', 'debug'],
+        logger: process.env.LOGGER_LEVEL?.split(',') || ['error', 'warn', 'log', 'debug'],
     });
 
     //register global filter to avoid exception filter
