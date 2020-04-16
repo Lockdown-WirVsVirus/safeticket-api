@@ -34,6 +34,7 @@ export interface Ticket extends TicketRequest {
 
 @Injectable()
 export class TicketsService {
+  
   private readonly logger = new Logger(TicketsService.name);
 
   constructor(
@@ -59,7 +60,7 @@ export class TicketsService {
   }
   /**
    *Find one ticket by ticket id.
-   * @param searchTicketId the ticket id of ticket to search
+   * @param searchTicketId the ticket id of the ticket to search
    */
   async findTicket(searchTicketId: string): Promise<Ticket> {
     const foundTicket: Ticket = await this.ticketModel.findOne({
