@@ -4,10 +4,10 @@ import { PassportModule } from '@nestjs/passport';
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
 import { TicketingModule } from '../ticketing/ticketing.module';
+import { JwtGuard } from './jwt.guard';
 
 @Module({
     imports: [
-        PassportModule,
         // loading JwtModule async to have access to process.env via ConfigService
         JwtModule.registerAsync({
             useFactory: async () => ({
