@@ -1,7 +1,10 @@
 import * as mongoose from 'mongoose';
 import { Ticket } from './tickets.service';
 
+export const TICKET_MODEL_NAME = 'Tickets';
+
 export interface TicketModel extends Ticket, mongoose.Document {}
+
 export const ticketSchema = new mongoose.Schema(
     {
         hashedPassportId: String,
@@ -40,5 +43,3 @@ export const ticketSchema = new mongoose.Schema(
 ticketSchema.virtual('ticketId').get(function() {
     return this._id;
 });
-
-export const ticketModel = mongoose.model<TicketModel>('Tickets', ticketSchema);

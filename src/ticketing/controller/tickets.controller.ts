@@ -1,7 +1,7 @@
+import { Body, Controller, Get, HttpCode, HttpException, HttpStatus, Logger, Param, Post } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
-import { Controller, Get, Post, Body, Param, Logger, HttpCode, HttpException, HttpStatus } from '@nestjs/common';
-import { TicketsService, Identity, Ticket, Address, TicketStatus } from '../services/tickets.service';
 import { HashingService } from '../services/hashing.service';
+import { Address, Identity, Ticket, TicketsService, TicketStatus } from '../services/tickets.service';
 
 export class TicketRequestDto {
     passportId: string;
@@ -65,7 +65,7 @@ export class TicketsController {
         const foundTicket: TicketResponseDto = await this.ticketsService.findTicket(ticketId);
 
         if (!foundTicket) {
-            throw new HttpException('Forbidden', HttpStatus.FORBIDDEN);
+            throw new HttpException('Ticket not Found', HttpStatus.NOT_FOUND);
         }
 
         return foundTicket;
@@ -75,6 +75,10 @@ export class TicketsController {
     @Post('/for/identity')
     async retrieveTicketsForIdentity(@Body() identity: IdentityDto): Promise<TicketResponseDto[]> {
         const ticketsOfIdentity: TicketResponseDto[] = await this.ticketsService.retrieveByIdentity(identity);
+
+        if (!ticketsOfIdentity) {
+            throw new HttpException(`Tickets for ${identity.hashedPassportId} found`, HttpStatus.NOT_FOUND);
+        }
 
         return ticketsOfIdentity;
     }

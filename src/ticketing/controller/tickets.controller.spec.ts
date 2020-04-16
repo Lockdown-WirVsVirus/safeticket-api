@@ -1,7 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { TicketsController, TicketRequestDto, TicketResponseDto } from './tickets.controller';
 import { HashingService } from '../services/hashing.service';
-import { TicketsService, Ticket } from '../services/tickets.service';
+import { Ticket, TicketsService } from '../services/tickets.service';
+import { TicketRequestDto, TicketResponseDto, TicketsController } from './tickets.controller';
 
 jest.mock('../services/tickets.service');
 
@@ -22,6 +22,31 @@ describe('TicketsController', () => {
         sut = app.get<TicketsController>(TicketsController);
         mockedTicketService = app.get<TicketsService>(TicketsService);
         hashingService = app.get<HashingService>(HashingService);
+
+        // Mock ticket save to db
+        const mockedTicket: Ticket = {
+            ticketId: 'testing',
+            reason: 'simulation',
+            startAddress: {
+                street: '',
+                houseNumber: '',
+                zipCode: '',
+                city: '',
+                country: '',
+            },
+            endAddress: {
+                street: '',
+                houseNumber: '',
+                zipCode: '',
+                city: '',
+                country: '',
+            },
+            hashedPassportId: 'wdasdsdas',
+            ticketStatus: 'CREATED',
+            validFromDateTime: new Date(),
+            validToDateTime: new Date(),
+        };
+        jest.spyOn(mockedTicketService, 'createTicket').mockReturnValue(Promise.resolve(mockedTicket));
     });
 
     afterEach(() => {

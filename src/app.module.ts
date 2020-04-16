@@ -1,8 +1,8 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
-import { TicketingModule } from './ticketing/ticketing.module';
 import { AuthModule } from './auth/auth.module';
+import { TicketingModule } from './ticketing/ticketing.module';
 
 @Module({
     imports: [
