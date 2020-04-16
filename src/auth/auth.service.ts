@@ -32,7 +32,8 @@ export class AuthService {
         };
     }
 
-    verifyToken(jwt: string): IJwtTokenPayload {
-        return this.jwtService.verify(jwt) as IJwtTokenPayload;
+    verifyToken(jwt: string): Promise<IJwtTokenPayload> {
+        // return this.jwtService.verify(jwt) as IJwtTokenPayload;
+        return this.jwtService.verifyAsync<IJwtTokenPayload>(jwt);
     }
 }
