@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { HashingService } from '../ticketing/services/hashing.service';
+import { HashingService } from '../../crypto/services/hashing.service';
 
 export interface IGenerateTokenPayload {
     passportId: string;

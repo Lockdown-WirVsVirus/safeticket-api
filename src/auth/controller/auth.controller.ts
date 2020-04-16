@@ -1,9 +1,9 @@
 import { Body, Controller, Get, Post, Request, UseGuards } from '@nestjs/common';
 import { ApiProperty } from '@nestjs/swagger';
 import { Request as ExpressRequest } from 'express';
-import { AuthService } from './auth.service';
-import { JwtGuard } from './jwt.guard';
-import { User } from './user.decorator';
+import { AuthService } from '../services/auth.service';
+import { JwtGuard } from '../jwt.guard';
+import { User } from '../user.decorator';
 
 export class AuthPayloadDto {
     @ApiProperty()

@@ -10,15 +10,15 @@ import { TicketingModule } from '../src/ticketing/ticketing.module';
 
 describe('End-2-End Testing', () => {
     let app: INestApplication;
-    let mongod: MongoMemoryServer;
+    let mongoDB: MongoMemoryServer;
 
     const timeout: number = 5_000;
 
     beforeEach(async () => {
-        mongod = new MongoMemoryServer();
-        const uri = await mongod.getUri();
+        mongoDB = new MongoMemoryServer();
+        const uri = await mongoDB.getUri();
 
-        console.log('** start in memory mongodb: ', await mongod.getDbName());
+        console.log('** start in memory mongodb: ', await mongoDB.getDbName());
 
         const moduleFixture: TestingModule = await Test.createTestingModule({
             imports: [
@@ -36,7 +36,7 @@ describe('End-2-End Testing', () => {
     }, timeout);
 
     afterEach(async () => {
-        await mongod.stop();
+        await mongoDB.stop();
         await app.close();
     }, timeout);
 

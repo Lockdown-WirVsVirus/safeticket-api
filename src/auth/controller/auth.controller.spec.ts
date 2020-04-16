@@ -1,9 +1,9 @@
 import { JwtService } from '@nestjs/jwt';
 import { Test, TestingModule } from '@nestjs/testing';
 import { AuthController } from './auth.controller';
-import { AuthService } from './auth.service';
+import { AuthService } from '../services/auth.service';
 
-jest.mock('./auth.service');
+jest.mock('../services/auth.service');
 
 describe('Auth Controller', () => {
     let sut: AuthController;

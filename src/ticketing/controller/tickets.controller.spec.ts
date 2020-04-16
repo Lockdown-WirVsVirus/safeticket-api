@@ -1,5 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { HashingService } from '../services/hashing.service';
+import { HashingService } from '../../crypto/services/hashing.service';
 import { Ticket, TicketsService } from '../services/tickets.service';
 import { TicketRequestDto, TicketResponseDto, TicketsController } from './tickets.controller';
 

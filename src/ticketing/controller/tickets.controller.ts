@@ -1,6 +1,6 @@
 import { Body, Controller, Get, HttpCode, HttpException, HttpStatus, Logger, Param, Post } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
-import { HashingService } from '../services/hashing.service';
+import { HashingService } from '../../crypto/services/hashing.service';
 import { Address, Identity, Ticket, TicketsService, TicketStatus } from '../services/tickets.service';
 
 export class TicketRequestDto {

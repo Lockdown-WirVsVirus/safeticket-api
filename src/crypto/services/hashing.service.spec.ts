@@ -12,7 +12,7 @@ describe('HashingService', () => {
         service = module.get<HashingService>(HashingService);
     });
 
-    it('hahsing service should be defined', () => {
+    it('hashing service should be defined', () => {
         expect(service).toBeDefined();
     });
 

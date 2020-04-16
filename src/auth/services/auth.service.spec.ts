@@ -1,5 +1,5 @@
 import { JwtService } from '@nestjs/jwt';
-import { HashingService } from '../ticketing/services/hashing.service';
+import { HashingService } from '../../crypto/services/hashing.service';
 import { AuthService } from './auth.service';
 
 describe('AuthService', () => {
