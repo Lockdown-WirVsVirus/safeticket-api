@@ -17,9 +17,7 @@ describe('HashingService', () => {
     });
 
     it('should hash given passport id', async () => {
-        expect(await service.hashPassportId('Ironman')).toBe(
-            '77fd3004ba0d5c69b05e01c84b0456e2d8c6e79b7f6b852b07a29db4c1ff682e',
-        );
+        expect(await service.hashPassportId('Ironman')).toBe('77fd3004ba0d5c69b05e01c84b0456e2d8c6e79b7f6b852b07a29db4c1ff682e');
     });
 
     it('should throw error on passed provided passport id', async () => {

@@ -1,22 +1,6 @@
 import { ApiTags } from '@nestjs/swagger';
-import {
-    Controller,
-    Get,
-    Post,
-    Body,
-    Param,
-    Logger,
-    HttpCode,
-    HttpException,
-    HttpStatus,
-} from '@nestjs/common';
-import {
-    TicketsService,
-    Identity,
-    Ticket,
-    Address,
-    TicketStatus,
-} from '../services/tickets.service';
+import { Controller, Get, Post, Body, Param, Logger, HttpCode, HttpException, HttpStatus } from '@nestjs/common';
+import { TicketsService, Identity, Ticket, Address, TicketStatus } from '../services/tickets.service';
 import { HashingService } from '../services/hashing.service';
 
 export class TicketRequestDto {
@@ -62,10 +46,7 @@ export class AddressDto implements Address {
 export class TicketsController {
     private readonly logger = new Logger(TicketsController.name);
 
-    constructor(
-        private readonly ticketsService: TicketsService,
-        private readonly hashingService: HashingService,
-    ) {}
+    constructor(private readonly ticketsService: TicketsService, private readonly hashingService: HashingService) {}
 
     @Post()
     async createTicket(@Body() ticketDto: TicketRequestDto): Promise<TicketResponseDto> {
@@ -93,10 +74,7 @@ export class TicketsController {
     @HttpCode(200)
     @Post('/for/identity')
     async retrieveTicketsForIdentity(@Body() identity: IdentityDto): Promise<TicketResponseDto[]> {
-
-        const ticketsOfIdentity: TicketResponseDto[] = await this.ticketsService.retrieveByIdentity(
-            identity,
-        );
+        const ticketsOfIdentity: TicketResponseDto[] = await this.ticketsService.retrieveByIdentity(identity);
 
         return ticketsOfIdentity;
     }

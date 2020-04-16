@@ -59,9 +59,7 @@ describe('TicketsController', () => {
             };
 
             // mock the response depending on the ticket request
-            jest.spyOn(mockedTicketService, 'createTicket').mockReturnValue(
-                Promise.resolve(mockedTicketResponse),
-            );
+            jest.spyOn(mockedTicketService, 'createTicket').mockReturnValue(Promise.resolve(mockedTicketResponse));
 
             // test call to create ticket
             const createdTicket: TicketResponseDto = await sut.createTicket(ticketRequest);
@@ -69,9 +67,7 @@ describe('TicketsController', () => {
             expect(createdTicket.ticketId).toBeTruthy();
             expect(createdTicket.hashedPassportId).toBeTruthy();
             expect(createdTicket.ticketStatus).toBe('CREATED');
-            expect(createdTicket.hashedPassportId).toBe(
-                '6493f4ecc943cfdb31bc5b71f909cfa2f1f206d91618125b0f0d1eddb3a77d43',
-            );
+            expect(createdTicket.hashedPassportId).toBe('6493f4ecc943cfdb31bc5b71f909cfa2f1f206d91618125b0f0d1eddb3a77d43');
         });
     });
 });

@@ -4,8 +4,7 @@ import CryptoJS = require('crypto-js');
 @Injectable()
 export class HashingService {
     private readonly logger = new Logger(HashingService.name);
-    private readonly salt =
-        process.env.PASSPORTID_SALT || 'super-long-and-secure-salt-from-backend';
+    private readonly salt = process.env.PASSPORTID_SALT || 'super-long-and-secure-salt-from-backend';
 
     /**
      * Builds an new hash of given passport id and returns it.

@@ -5,68 +5,65 @@ import { Model } from 'mongoose';
 import { TicketModel } from './tickets.schema';
 
 export interface Address {
-  street: string;
-  houseNumber: string;
-  zipCode: string;
-  city: string;
-  country: string;
+    street: string;
+    houseNumber: string;
+    zipCode: string;
+    city: string;
+    country: string;
 }
 export type TicketStatus = 'CREATED' | 'EXPIRED' | 'DECLINED';
 
 export interface Identity {
-  hashedPassportId: string;
+    hashedPassportId: string;
 }
 
 export interface TicketRequest extends Identity {
-  reason: string;
+    reason: string;
 
-  startAddress: Address;
-  endAddress: Address;
+    startAddress: Address;
+    endAddress: Address;
 
-  validFromDateTime: Date;
-  validToDateTime: Date;
+    validFromDateTime: Date;
+    validToDateTime: Date;
 }
 
 export interface Ticket extends TicketRequest {
-  ticketId: string;
-  ticketStatus: TicketStatus;
+    ticketId: string;
+    ticketStatus: TicketStatus;
 }
 
 @Injectable()
 export class TicketsService {
-  
-  private readonly logger = new Logger(TicketsService.name);
+    private readonly logger = new Logger(TicketsService.name);
 
-  constructor(
-    @InjectModel('Tickets') private ticketModel: Model<TicketModel>,
-  ) {}
+    constructor(@InjectModel('Tickets') private ticketModel: Model<TicketModel>) {}
 
-  /**
-   *Creates a new ticket by given request.
-   * @param ticketToCreate the new ticket to create.
-   */
-  async createTicket(ticketToCreate: TicketRequest): Promise<Ticket> {
-    return new this.ticketModel(ticketToCreate).save();
-  }
+    /**
+     *Creates a new ticket by given request.
+     * @param ticketToCreate the new ticket to create.
+     */
+    async createTicket(ticketToCreate: TicketRequest): Promise<Ticket> {
+        return new this.ticketModel(ticketToCreate).save();
+    }
 
-  /**
-   * Search all tickets which belongs to hashed password id.
-   * @param searchedHashedPasswordId hashed passwort id to search for tickets
-   */
-  async retrieveByIdentity(identity: Identity): Promise<Ticket[]> {
-    return this.ticketModel.find({
-      hashedPassportId: identity.hashedPassportId,
-    });
-  }
-  /**
-   *Find one ticket by ticket id.
-   * @param searchTicketId the ticket id of the ticket to search
-   */
-  async findTicket(searchTicketId: string): Promise<Ticket> {
-    const foundTicket: Ticket = await this.ticketModel.findOne({
-      _id: new ObjectId(searchTicketId),
-    });
+    /**
+     * Search all tickets which belongs to hashed password id.
+     * @param searchedHashedPasswordId hashed passwort id to search for tickets
+     */
+    async retrieveByIdentity(identity: Identity): Promise<Ticket[]> {
+        return this.ticketModel.find({
+            hashedPassportId: identity.hashedPassportId,
+        });
+    }
+    /**
+     *Find one ticket by ticket id.
+     * @param searchTicketId the ticket id of the ticket to search
+     */
+    async findTicket(searchTicketId: string): Promise<Ticket> {
+        const foundTicket: Ticket = await this.ticketModel.findOne({
+            _id: new ObjectId(searchTicketId),
+        });
 
-    return foundTicket;
-  }
+        return foundTicket;
+    }
 }
