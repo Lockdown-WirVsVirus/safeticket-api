@@ -1,21 +1,7 @@
+import { Body, Controller, Get, HttpCode, Logger, Param, Post } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
-import {
-    Controller,
-    Get,
-    Post,
-    Body,
-    Param,
-    Logger,
-    HttpCode,
-} from '@nestjs/common';
-import {
-    TicketsService,
-    Identity,
-    Ticket,
-    Address,
-    TicketStatus,
-} from '../services/tickets.service';
 import { HashingService } from '../services/hashing.service';
+import { Address, Identity, Ticket, TicketsService, TicketStatus } from '../services/tickets.service';
 
 export class TicketRequestDto {
     passportId: string;
@@ -60,19 +46,12 @@ export class AddressDto implements Address {
 export class TicketsController {
     private readonly logger = new Logger(TicketsController.name);
 
-    constructor(
-        private readonly ticketsService: TicketsService,
-        private readonly hashingService: HashingService,
-    ) {}
+    constructor(private readonly ticketsService: TicketsService, private readonly hashingService: HashingService) {}
 
     @Post()
-    async createTicket(
-        @Body() ticketDto: TicketRequestDto,
-    ): Promise<TicketResponseDto> {
+    async createTicket(@Body() ticketDto: TicketRequestDto): Promise<TicketResponseDto> {
         return this.ticketsService.createTicket({
-            hashedPassportId: this.hashingService.hashPassportId(
-                ticketDto.passportId,
-            ),
+            hashedPassportId: this.hashingService.hashPassportId(ticketDto.passportId),
             reason: ticketDto.reason,
             startAddress: ticketDto.startAddress,
             endAddress: ticketDto.endAddress,
@@ -82,17 +61,13 @@ export class TicketsController {
     }
 
     @Get(':ticketId')
-    async getTicket(
-        @Param('ticketId') ticketId: string,
-    ): Promise<TicketResponseDto> {
+    async getTicket(@Param('ticketId') ticketId: string): Promise<TicketResponseDto> {
         return this.ticketsService.findTicket(ticketId);
     }
 
     @HttpCode(200)
     @Post('/for/identity')
-    async retrieveTicketsForIdentity(
-        @Body() identity: IdentityDto,
-    ): Promise<TicketResponseDto[]> {
+    async retrieveTicketsForIdentity(@Body() identity: IdentityDto): Promise<TicketResponseDto[]> {
         return this.ticketsService.retrieveByIdentity(identity);
     }
 }

@@ -36,9 +36,7 @@ export interface Ticket extends TicketRequest {
 export class TicketsService {
     private readonly logger = new Logger(TicketsService.name);
 
-    constructor(
-        @InjectModel('Tickets') private ticketModel: Model<TicketModel>,
-    ) {}
+    constructor(@InjectModel('Tickets') private ticketModel: Model<TicketModel>) {}
 
     /**
      *Creates a new ticket by given request.

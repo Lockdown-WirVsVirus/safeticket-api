@@ -5,3 +5,4 @@ dist
 
 # ignore .env.local but keep .env
 .env.local
+.orig

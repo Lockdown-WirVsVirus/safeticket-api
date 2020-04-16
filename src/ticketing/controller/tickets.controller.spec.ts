@@ -1,7 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { TicketsController, TicketRequestDto } from './tickets.controller';
 import { HashingService } from '../services/hashing.service';
-import { TicketsService, Ticket } from '../services/tickets.service';
+import { Ticket, TicketsService } from '../services/tickets.service';
+import { TicketRequestDto, TicketsController } from './tickets.controller';
 
 jest.mock('../services/tickets.service');
 
@@ -44,9 +44,7 @@ describe('TicketsController', () => {
             validFromDateTime: new Date(),
             validToDateTime: new Date(),
         };
-        jest.spyOn(ticketService, 'createTicket').mockReturnValue(
-            Promise.resolve(mockedTicket),
-        );
+        jest.spyOn(ticketService, 'createTicket').mockReturnValue(Promise.resolve(mockedTicket));
     });
 
     afterEach(() => {

@@ -1,10 +1,8 @@
-import { Module, Logger } from '@nestjs/common';
+import { Logger, Module } from '@nestjs/common';
 import { JwtModule } from '@nestjs/jwt';
-import { PassportModule } from '@nestjs/passport';
+import { TicketingModule } from '../ticketing/ticketing.module';
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
-import { TicketingModule } from '../ticketing/ticketing.module';
-import { JwtGuard } from './jwt.guard';
 
 @Module({
     imports: [

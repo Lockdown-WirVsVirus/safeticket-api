@@ -1,6 +1,6 @@
-import { AuthService } from './auth.service';
-import { HashingService } from '../ticketing/services/hashing.service';
 import { JwtService } from '@nestjs/jwt';
+import { HashingService } from '../ticketing/services/hashing.service';
+import { AuthService } from './auth.service';
 
 describe('AuthService', () => {
     // mock dependent services
