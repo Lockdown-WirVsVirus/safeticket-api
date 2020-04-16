@@ -5,21 +5,21 @@ import { HashingService } from '../ticketing/services/hashing.service';
 export interface IGenerateTokenPayload {
     passportId: string;
 }
+
 export interface IJwtTokenPayload {
+    hashedPassportId: string;
+}
+
+export interface IGenerateTokenResponse {
     token: string;
-    jwtPayload: {
-        hashedPassportId;
-    };
+    jwtPayload: IJwtTokenPayload;
 }
 
 @Injectable()
 export class AuthService {
-    constructor(
-        private jwtService: JwtService,
-        private hashingService: HashingService,
-    ) {}
+    constructor(private jwtService: JwtService, private hashingService: HashingService) {}
 
-    generateToken(payload: IGenerateTokenPayload): IJwtTokenPayload {
+    generateToken(payload: IGenerateTokenPayload): IGenerateTokenResponse {
         const { passportId, ...other } = payload;
         const hashedPassportId = this.hashingService.hashPassportId(passportId);
         const jwtPayload = {
@@ -30,5 +30,9 @@ export class AuthService {
             token: this.jwtService.sign(jwtPayload),
             jwtPayload,
         };
+    }
+
+    verifyToken(jwt: string): IJwtTokenPayload {
+        return this.jwtService.verify(jwt) as IJwtTokenPayload;
     }
 }
