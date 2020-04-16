@@ -1,4 +1,3 @@
-import { Test, TestingModule } from '@nestjs/testing';
 import { AuthService } from './auth.service';
 import { HashingService } from '../ticketing/services/hashing.service';
 import { JwtService } from '@nestjs/jwt';
@@ -8,9 +7,7 @@ describe('AuthService', () => {
     const jwtService: JwtService = new JwtService({});
     const hashingService: HashingService = new HashingService();
     jest.spyOn(jwtService, 'sign').mockReturnValue('123.abc.xyz');
-    jest.spyOn(hashingService, 'hashPassportId').mockImplementation(
-        (passportId: string) => '#' + passportId,
-    );
+    jest.spyOn(hashingService, 'hashPassportId').mockImplementation((passportId: string) => '#' + passportId);
 
     // we just need one instance
     let service: AuthService = new AuthService(jwtService, hashingService);
