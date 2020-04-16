@@ -1,14 +1,13 @@
 import { Module } from '@nestjs/common';
-import { TicketsController } from './controller/tickets.controller';
-import { TicketsService } from './services/tickets.service';
 import { MongooseModule } from '@nestjs/mongoose';
+import { TicketsController } from './controller/tickets.controller';
 import { ticketSchema } from './services/tickets.schema';
-import { HashingService } from '../crypto/services/hashing.service';
+import { TicketsService } from './services/tickets.service';
 
 @Module({
     imports: [MongooseModule.forFeature([{ name: 'Tickets', schema: ticketSchema }])],
     controllers: [TicketsController],
-    providers: [TicketsService, HashingService],
-    exports: [TicketsService, HashingService],
+    providers: [TicketsService],
+    exports: [TicketsService],
 })
 export class TicketingModule {}
