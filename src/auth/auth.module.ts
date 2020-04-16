@@ -1,6 +1,6 @@
 import { Logger, Module } from '@nestjs/common';
 import { JwtModule } from '@nestjs/jwt';
-import { CryptoModule } from 'src/crypto/crypto.module';
+import { CryptoModule } from '../crypto/crypto.module';
 import { AuthController } from './controller/auth.controller';
 import { AuthService } from './services/auth.service';
 
