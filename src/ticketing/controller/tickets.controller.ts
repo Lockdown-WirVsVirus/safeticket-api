@@ -1,7 +1,7 @@
+import { Body, Controller, Get, HttpCode, Logger, Param, Post } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
-import { Controller, Get, Post, Body, Param, Logger, HttpCode } from '@nestjs/common';
-import { TicketsService, Identity, Ticket, Address, TicketStatus } from '../services/tickets.service';
 import { HashingService } from '../services/hashing.service';
+import { Address, Identity, Ticket, TicketsService, TicketStatus } from '../services/tickets.service';
 
 export class TicketRequestDto {
     passportId: string;

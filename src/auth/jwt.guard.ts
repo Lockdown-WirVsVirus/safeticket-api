@@ -1,4 +1,4 @@
-import { Injectable, CanActivate, ExecutionContext, Logger, UnauthorizedException } from '@nestjs/common';
+import { CanActivate, ExecutionContext, Injectable, Logger, UnauthorizedException } from '@nestjs/common';
 import { Observable } from 'rxjs';
 import { AuthService } from './auth.service';
 

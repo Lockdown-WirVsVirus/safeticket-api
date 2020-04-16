@@ -1,3 +1,4 @@
+import { LogLevel } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { AppModule } from './app.module';
@@ -7,10 +8,11 @@ const port = process.env.PORT || 3000;
 
 async function bootstrap() {
     const app = await NestFactory.create(AppModule, {
-        logger: process.env.LOGGER_LEVEL?.split(',') || ['error', 'warn', 'log', 'debug'],
+        // use env variable LOGGER_LEVEL: error,warn,log
+        logger: (process.env.LOGGER_LEVEL?.split(',') as LogLevel[]) || ['error', 'warn', 'log'],
     });
 
-    //register global filter to avoid exception filter
+    //register global filter to avoid exception information propagation
     app.useGlobalFilters(new HttpExceptionFilter());
 
     // cors of course
