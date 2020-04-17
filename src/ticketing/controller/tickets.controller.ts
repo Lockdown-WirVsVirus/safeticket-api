@@ -18,10 +18,10 @@ export class TicketRequestDto {
     validToDateTime: Date;
 }
 
-export class TicketIDDto implements TicketID{
-  @IsNotEmpty()
-  @Length(12)
-  searchTicketId: string;
+export class TicketIDDto implements TicketID {
+    @IsNotEmpty()
+    @Length(12)
+    searchTicketId: string;
 }
 
 export class IdentityDto implements Identity {
@@ -49,7 +49,7 @@ export class AddressDto implements Address {
     street: string;
     @IsNotEmpty()
     houseNumber: string;
-    @IsNotEmpty() 
+    @IsNotEmpty()
     @Length(5)
     zipCode: string;
     @IsNotEmpty()
@@ -78,7 +78,7 @@ export class TicketsController {
     }
 
     @Get(':ticketId')
-    async getTicket(@Param('ticketId') ticketId: string): Promise<TicketResponseDto> {
+    async getTicket(@Param('ticketId') ticketId: TicketIDDto): Promise<TicketResponseDto> {
         return this.ticketsService.findTicket(ticketId);
     }
 
