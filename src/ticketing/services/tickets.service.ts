@@ -18,8 +18,8 @@ export interface Identity {
   hashedPassportId: string;
 }
 
-export interface ITicketID{
-  ticketID : string,
+export interface ITicketID {
+  ticketID: string;
 }
 
 export interface TicketRequest extends Identity {
@@ -78,19 +78,17 @@ export class TicketsService {
     // TODO: use Validationpipe
 
     if (!ticketid.ticketID) {
-      return "id is empty";
+      return 'id is empty';
     }
 
     //TODO: DOnt delete. change Status
     let result = await this.ticketModel.deleteOne({
-      hashedPassportId : ticketid.ticketID,
-    })
+      hashedPassportId: ticketid.ticketID,
+    });
 
     if (result.n == 0) {
-      return "No tickets with this id";
+      return 'No tickets with this id';
     }
-    return "Delete ticket";
+    return 'Delete ticket';
   }
-
-  
 }
