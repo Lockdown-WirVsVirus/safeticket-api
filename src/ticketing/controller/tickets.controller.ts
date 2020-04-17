@@ -1,20 +1,31 @@
 import { Body, Controller, Get, HttpCode, Logger, Param, Post } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { HashingService } from '../services/hashing.service';
-import { Address, Identity, Ticket, TicketsService, TicketStatus } from '../services/tickets.service';
+import { Address, Identity, Ticket, TicketsService, TicketStatus, TicketID } from '../services/tickets.service';
+import { MinLength, IsNotEmpty, IsDate, Length } from 'class-validator';
 
 export class TicketRequestDto {
+    @IsNotEmpty()
     passportId: string;
     reason: string;
-
+    @IsNotEmpty()
     startAddress: AddressDto;
+    @IsNotEmpty()
     endAddress: AddressDto;
-
+    @IsDate()
     validFromDateTime: Date;
+    @IsDate()
     validToDateTime: Date;
 }
 
+export class TicketIDDto implements TicketID{
+  @IsNotEmpty()
+  @Length(12)
+  searchTicketId: string;
+}
+
 export class IdentityDto implements Identity {
+    @IsNotEmpty()
     hashedPassportId: string;
 }
 
@@ -34,10 +45,16 @@ export class TicketResponseDto implements Ticket {
 }
 
 export class AddressDto implements Address {
+    @IsNotEmpty()
     street: string;
+    @IsNotEmpty()
     houseNumber: string;
+    @IsNotEmpty() 
+    @Length(5)
     zipCode: string;
+    @IsNotEmpty()
     city: string;
+    @MinLength(2)
     country: string;
 }
 
