@@ -4,20 +4,6 @@ import { HashingService } from '../services/hashing.service';
 import { Address, Identity, Ticket, TicketsService, TicketStatus, TicketID } from '../services/tickets.service';
 import { MinLength, IsNotEmpty, IsDate, Length } from 'class-validator';
 
-export class TicketRequestDto {
-    @IsNotEmpty()
-    passportId: string;
-    reason: string;
-    @IsNotEmpty()
-    startAddress: AddressDto;
-    @IsNotEmpty()
-    endAddress: AddressDto;
-    @IsDate()
-    validFromDateTime: Date;
-    @IsDate()
-    validToDateTime: Date;
-}
-
 export class TicketIDDto implements TicketID {
     @IsNotEmpty()
     @Length(12)
@@ -56,6 +42,20 @@ export class AddressDto implements Address {
     city: string;
     @MinLength(2)
     country: string;
+}
+
+export class TicketRequestDto {
+    @IsNotEmpty()
+    passportId: string;
+    reason: string;
+    @IsNotEmpty()
+    startAddress: AddressDto;
+    @IsNotEmpty()
+    endAddress: AddressDto;
+    @IsDate()
+    validFromDateTime: Date;
+    @IsDate()
+    validToDateTime: Date;
 }
 
 @ApiTags('ticket')
