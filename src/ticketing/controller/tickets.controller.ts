@@ -77,7 +77,8 @@ export class TicketsController {
         const ticketsOfIdentity: TicketResponseDto[] = await this.ticketsService.retrieveByIdentity(identity);
 
         if (!ticketsOfIdentity) {
-            throw new HttpException(`Tickets for ${identity.hashedPassportId} found`, HttpStatus.NOT_FOUND);
+            // return array if not found by ticket service
+            return [];
         }
 
         return ticketsOfIdentity;
