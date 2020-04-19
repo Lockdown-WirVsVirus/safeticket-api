@@ -7,6 +7,7 @@ import { TicketingModule } from '../src/ticketing/ticketing.module';
 import { AuthModule } from '../src/auth/auth.module';
 import { ConfigModule } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
+import { async } from 'rxjs/internal/scheduler/async';
 
 describe('End-2-End Testing', () => {
     let app: INestApplication;
@@ -59,7 +60,7 @@ describe('End-2-End Testing', () => {
             country: 'Germany',
         },
         validFromDateTime: '2020-04-01T08:00:00.000Z',
-        validToDateTime: '2020-03-01T00:00:00.000Z',
+        validToDateTime: '2020-04-01T10:00:00.000Z',
     };
 
     describe('Ticketing', () => {
@@ -120,6 +121,35 @@ describe('End-2-End Testing', () => {
             timeout,
         );
     });
+
+    it(
+        'can not create Ticket because ticket exist',
+        async () => {
+            return await request(app.getHttpServer())
+                .post('/api/v1/tickets')
+                .send(partyTicket)
+                .expect(201)
+                .then(async createError => {
+                    await request(app.getHttpServer())
+                        .post('/api/v1/tickets')
+                        .send(partyTicket)
+                        .expect(409);
+                });
+        },
+        timeout,
+    );
+
+    it(
+        'can not create Ticket because date is wrong',
+        async () => {
+            partyTicket.validToDateTime = '';
+            return await request(app.getHttpServer())
+                .post('/api/v1/tickets')
+                .send(partyTicket)
+                .expect(400);
+        },
+        timeout,
+    );
 
     it(
         'can not create Ticket because id is wrong',

@@ -49,9 +49,15 @@ export class TicketsService {
      * @param ticketToCreate the new ticket to create.
      */
     async createTicket(ticketToCreate: TicketRequest): Promise<Ticket> {
-        validateOrReject(ticketToCreate).catch(errors => {
-            throw new HttpException('BAD_REQUEST', HttpStatus.BAD_REQUEST);
-        });
+        let numberOfTickets = await this.ticketModel
+            .find({
+                validToDateTime: ticketToCreate.validToDateTime,
+                hashedPassportId: ticketToCreate.hashedPassportId,
+            })
+            .count();
+        if (numberOfTickets > 0) {
+            throw new HttpException('Ticket exist', HttpStatus.CONFLICT);
+        }
         return new this.ticketModel(ticketToCreate).save();
     }
 
@@ -60,9 +66,6 @@ export class TicketsService {
      * @param searchedHashedPasswordId hashed passwort id to search for tickets
      */
     async retrieveByIdentity(identity: Identity): Promise<Ticket[]> {
-        validateOrReject(identity).catch(errors => {
-            throw new HttpException('BAD_REQUEST', HttpStatus.BAD_REQUEST);
-        });
         return this.ticketModel.find({
             hashedPassportId: identity.hashedPassportId,
         });
@@ -72,9 +75,6 @@ export class TicketsService {
      * @param searchTicketId the ticket id of ticket to search
      */
     async findTicket(searchTicketId: TicketIDDto): Promise<Ticket> {
-        validateOrReject(searchTicketId).catch(errors => {
-            throw new HttpException('BAD_REQUEST', HttpStatus.BAD_REQUEST);
-        });
         const foundTicket: Ticket = await this.ticketModel.findOne({
             _id: new ObjectId(searchTicketId.searchTicketId),
         });
