@@ -89,7 +89,7 @@ export class TicketsService {
      */
     async findTicket(searchTicketId: string): Promise<Ticket> {
         const foundTicket: Ticket = await this.ticketModel.findOne({
-            _id: searchTicketId,
+            _id: new ObjectId(searchTicketId),
         });
 
         return foundTicket;
