@@ -2,11 +2,9 @@ import { Body, Controller, Get, HttpCode, Logger, Param, Post, HttpException, Ht
 import { ApiTags } from '@nestjs/swagger';
 import { HashingService } from '../services/hashing.service';
 import { Address, Identity, Ticket, TicketsService, TicketStatus, TicketID } from '../services/tickets.service';
-import { MinLength, IsNotEmpty, Length, IsDateString, ValidateIf } from 'class-validator';
-import { ValidationPipe } from '../../validation/validationpipe';
+import { MinLength, IsNotEmpty, Length, IsDateString } from 'class-validator';
 
 export class TicketIDDto implements TicketID {
-    @IsNotEmpty()
     searchTicketId: string;
 }
 
@@ -67,7 +65,7 @@ export class TicketsController {
     constructor(private readonly ticketsService: TicketsService, private readonly hashingService: HashingService) {}
 
     @Post()
-    async createTicket(@Body(new ValidationPipe()) ticketDto: TicketRequestDto): Promise<TicketResponseDto> {
+    async createTicket(@Body() ticketDto: TicketRequestDto): Promise<TicketResponseDto> {
         return this.ticketsService.createTicket({
             hashedPassportId: this.hashingService.hashPassportId(ticketDto.passportId),
             reason: ticketDto.reason,
@@ -79,13 +77,13 @@ export class TicketsController {
     }
 
     @Get(':ticketId')
-    async getTicket(@Param('ticketId', new ValidationPipe()) ticketId: TicketIDDto): Promise<TicketResponseDto> {
+    async getTicket(@Param('ticketId') ticketId: string): Promise<TicketResponseDto> {
         return this.ticketsService.findTicket(ticketId);
     }
 
     @HttpCode(200)
     @Post('/for/identity')
-    async retrieveTicketsForIdentity(@Body(new ValidationPipe()) identity: IdentityDto): Promise<TicketResponseDto[]> {
+    async retrieveTicketsForIdentity(@Body() identity: IdentityDto): Promise<TicketResponseDto[]> {
         return this.ticketsService.retrieveByIdentity(identity);
     }
 }

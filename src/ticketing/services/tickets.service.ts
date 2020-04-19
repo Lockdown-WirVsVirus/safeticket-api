@@ -74,9 +74,9 @@ export class TicketsService {
      *Find one ticket by ticket id.
      * @param searchTicketId the ticket id of ticket to search
      */
-    async findTicket(searchTicketId: TicketIDDto): Promise<Ticket> {
+    async findTicket(searchTicketId: string): Promise<Ticket> {
         const foundTicket: Ticket = await this.ticketModel.findOne({
-            _id: new ObjectId(searchTicketId.searchTicketId),
+            _id: searchTicketId,
         });
 
         return foundTicket;

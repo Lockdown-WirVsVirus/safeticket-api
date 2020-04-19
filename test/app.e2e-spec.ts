@@ -32,6 +32,7 @@ describe('End-2-End Testing', () => {
         }).compile();
 
         app = moduleFixture.createNestApplication();
+        app.useGlobalPipes(new ValidationPipe());
         await app.init();
     }, timeout);
 
@@ -88,7 +89,7 @@ describe('End-2-End Testing', () => {
                             .expect(200)
                             .expect(searchTicketResponse => {
                                 const sameTicketLikeCreated = searchTicketResponse.body;
-                                expect(sameTicketLikeCreated).toMatchObject({});
+                                expect(sameTicketLikeCreated).toMatchObject(createdTicket);
                             });
                     });
             },
