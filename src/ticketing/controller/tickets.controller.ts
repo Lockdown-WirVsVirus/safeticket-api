@@ -55,6 +55,7 @@ export class TicketRequestDto {
     validFromDateTime: Date;
     @IsDateString()
     validToDateTime: Date;
+    @IsNotEmpty()
     reason: string;
 }
 
