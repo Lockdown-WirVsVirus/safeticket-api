@@ -7,7 +7,6 @@ import { TicketingModule } from '../src/ticketing/ticketing.module';
 import { AuthModule } from '../src/auth/auth.module';
 import { ConfigModule } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
-import { async } from 'rxjs/internal/scheduler/async';
 
 describe('End-2-End Testing', () => {
     let app: INestApplication;
@@ -74,7 +73,7 @@ describe('End-2-End Testing', () => {
                 });
         });
 
-        /**  it(
+        it(
             'search created ticket',
             async () => {
                 return await request(app.getHttpServer())
@@ -94,7 +93,7 @@ describe('End-2-End Testing', () => {
                     });
             },
             timeout,
-        ); */
+        );
 
         it(
             'search all created tickets by identity',
