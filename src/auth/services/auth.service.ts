@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { HashingService } from '../ticketing/services/hashing.service';
+import { HashingService } from '../../crypto/services/hashing.service';
 
 export interface IGenerateTokenPayload {
     passportId: string;
@@ -19,17 +19,17 @@ export interface IGenerateTokenResponse {
 export class AuthService {
     constructor(private jwtService: JwtService, private hashingService: HashingService) {}
 
-    generateToken(payload: IGenerateTokenPayload): IGenerateTokenResponse {
+    async generateToken(payload: IGenerateTokenPayload): Promise<IGenerateTokenResponse> {
         const { passportId, ...other } = payload;
-        const hashedPassportId = this.hashingService.hashPassportId(passportId);
+        const hashedPassportId = await this.hashingService.hashPassportId(passportId);
         const jwtPayload = {
             hashedPassportId,
             ...other,
         };
-        return {
+        return Promise.resolve({
             token: this.jwtService.sign(jwtPayload),
             jwtPayload,
-        };
+        });
     }
 
     verifyToken(jwt: string): Promise<IJwtTokenPayload> {

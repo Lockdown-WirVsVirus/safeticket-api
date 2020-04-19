@@ -1,9 +1,9 @@
 import { Body, Controller, Get, Post, Request, UseGuards } from '@nestjs/common';
 import { ApiProperty } from '@nestjs/swagger';
 import { Request as ExpressRequest } from 'express';
-import { AuthService } from './auth.service';
-import { JwtGuard } from './jwt.guard';
-import { User } from './user.decorator';
+import { AuthService } from '../services/auth.service';
+import { JwtGuard } from '../jwt.guard';
+import { User } from '../user.decorator';
 
 export class AuthPayloadDto {
     @ApiProperty()
@@ -23,8 +23,8 @@ export class AuthController {
     constructor(private readonly authService: AuthService) {}
 
     @Post('token')
-    getToken(@Body() payload: AuthPayloadDto): JwtTokenDto {
-        return this.authService.generateToken(payload);
+    async getToken(@Body() payload: AuthPayloadDto): Promise<JwtTokenDto> {
+        return await this.authService.generateToken(payload);
     }
 
     @Get('test')

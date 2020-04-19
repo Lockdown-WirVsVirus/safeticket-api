@@ -1,6 +1,6 @@
-import { Body, Controller, Get, HttpCode, Logger, Param, Post } from '@nestjs/common';
+import { Body, Controller, Get, HttpCode, HttpException, HttpStatus, Logger, Param, Post } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
-import { HashingService } from '../services/hashing.service';
+import { HashingService } from '../../crypto/services/hashing.service';
 import { Address, Identity, Ticket, TicketsService, TicketStatus } from '../services/tickets.service';
 
 export class TicketRequestDto {
@@ -51,7 +51,7 @@ export class TicketsController {
     @Post()
     async createTicket(@Body() ticketDto: TicketRequestDto): Promise<TicketResponseDto> {
         return this.ticketsService.createTicket({
-            hashedPassportId: this.hashingService.hashPassportId(ticketDto.passportId),
+            hashedPassportId: await this.hashingService.hashPassportId(ticketDto.passportId),
             reason: ticketDto.reason,
             startAddress: ticketDto.startAddress,
             endAddress: ticketDto.endAddress,
@@ -62,12 +62,25 @@ export class TicketsController {
 
     @Get(':ticketId')
     async getTicket(@Param('ticketId') ticketId: string): Promise<TicketResponseDto> {
-        return this.ticketsService.findTicket(ticketId);
+        const foundTicket: TicketResponseDto = await this.ticketsService.findTicket(ticketId);
+
+        if (!foundTicket) {
+            throw new HttpException('Ticket not Found', HttpStatus.NOT_FOUND);
+        }
+
+        return foundTicket;
     }
 
     @HttpCode(200)
     @Post('/for/identity')
     async retrieveTicketsForIdentity(@Body() identity: IdentityDto): Promise<TicketResponseDto[]> {
-        return this.ticketsService.retrieveByIdentity(identity);
+        const ticketsOfIdentity: TicketResponseDto[] = await this.ticketsService.retrieveByIdentity(identity);
+
+        if (!ticketsOfIdentity) {
+            // return array if not found by ticket service
+            return [];
+        }
+
+        return ticketsOfIdentity;
     }
 }
