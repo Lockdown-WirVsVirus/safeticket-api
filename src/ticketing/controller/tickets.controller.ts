@@ -6,12 +6,10 @@ import { MinLength, IsNotEmpty, IsDate, Length } from 'class-validator';
 
 export class TicketIDDto implements TicketID {
     @IsNotEmpty()
-    @Length(12)
     searchTicketId: string;
 }
 
 export class IdentityDto implements Identity {
-    @IsNotEmpty()
     hashedPassportId: string;
 }
 
