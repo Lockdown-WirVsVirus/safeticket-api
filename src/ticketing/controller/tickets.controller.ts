@@ -1,8 +1,9 @@
-import { Body, Controller, Get, HttpCode, Logger, Param, Post } from '@nestjs/common';
+import { Body, Controller, Get, HttpCode, Logger, Param, Post, HttpException, HttpStatus } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { HashingService } from '../services/hashing.service';
 import { Address, Identity, Ticket, TicketsService, TicketStatus, TicketID } from '../services/tickets.service';
 import { MinLength, IsNotEmpty, IsDate, Length } from 'class-validator';
+import { validate } from 'class-validator';
 
 export class TicketIDDto implements TicketID {
     @IsNotEmpty()
@@ -10,6 +11,7 @@ export class TicketIDDto implements TicketID {
 }
 
 export class IdentityDto implements Identity {
+    @Length(1000)
     hashedPassportId: string;
 }
 
@@ -65,6 +67,11 @@ export class TicketsController {
 
     @Post()
     async createTicket(@Body() ticketDto: TicketRequestDto): Promise<TicketResponseDto> {
+        validate(ticketDto).then(errors => {
+            if (errors.length > 0) {
+                throw new HttpException('BAD_REQUEST', HttpStatus.BAD_REQUEST);
+            }
+        });
         return this.ticketsService.createTicket({
             hashedPassportId: this.hashingService.hashPassportId(ticketDto.passportId),
             reason: ticketDto.reason,
@@ -77,6 +84,11 @@ export class TicketsController {
 
     @Get(':ticketId')
     async getTicket(@Param('ticketId') ticketId: TicketIDDto): Promise<TicketResponseDto> {
+        validate(ticketId).then(errors => {
+            if (errors.length > 0) {
+                throw new HttpException('BAD_REQUEST', HttpStatus.BAD_REQUEST);
+            }
+        });
         return this.ticketsService.findTicket(ticketId);
     }
 

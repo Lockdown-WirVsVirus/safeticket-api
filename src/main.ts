@@ -1,4 +1,4 @@
-import { LogLevel } from '@nestjs/common';
+import { LogLevel, ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { AppModule } from './app.module';
@@ -29,6 +29,7 @@ async function bootstrap() {
     SwaggerModule.setup('api-doc', app, document);
 
     await app.listen(port);
+    app.useGlobalPipes(new ValidationPipe());
     console.log('server started at port ' + port);
 }
 bootstrap();

@@ -4,7 +4,7 @@ import { ObjectId } from 'mongodb';
 import { Model } from 'mongoose';
 import { TicketModel } from './tickets.schema';
 import { TicketIDDto } from '../controller/tickets.controller';
-import { validate } from 'class-validator';
+import { validate, validateOrReject } from 'class-validator';
 
 export interface TicketID {
     searchTicketId: string;
@@ -49,10 +49,8 @@ export class TicketsService {
      * @param ticketToCreate the new ticket to create.
      */
     async createTicket(ticketToCreate: TicketRequest): Promise<Ticket> {
-        validate(ticketToCreate).then(errors => {
-            if (errors.length > 0) {
-                throw new HttpException('BAD_REQUEST', HttpStatus.BAD_REQUEST);
-            }
+        validateOrReject(ticketToCreate).catch(errors => {
+            throw new HttpException('BAD_REQUEST', HttpStatus.BAD_REQUEST);
         });
         return new this.ticketModel(ticketToCreate).save();
     }
@@ -62,10 +60,8 @@ export class TicketsService {
      * @param searchedHashedPasswordId hashed passwort id to search for tickets
      */
     async retrieveByIdentity(identity: Identity): Promise<Ticket[]> {
-        validate(identity).then(errors => {
-            if (errors.length > 0) {
-                throw new HttpException('BAD_REQUEST', HttpStatus.BAD_REQUEST);
-            }
+        validateOrReject(identity).catch(errors => {
+            throw new HttpException('BAD_REQUEST', HttpStatus.BAD_REQUEST);
         });
         return this.ticketModel.find({
             hashedPassportId: identity.hashedPassportId,
@@ -76,10 +72,8 @@ export class TicketsService {
      * @param searchTicketId the ticket id of ticket to search
      */
     async findTicket(searchTicketId: TicketIDDto): Promise<Ticket> {
-        validate(searchTicketId).then(errors => {
-            if (errors.length > 0) {
-                throw new HttpException('BAD_REQUEST', HttpStatus.BAD_REQUEST);
-            }
+        validateOrReject(searchTicketId).catch(errors => {
+            throw new HttpException('BAD_REQUEST', HttpStatus.BAD_REQUEST);
         });
         const foundTicket: Ticket = await this.ticketModel.findOne({
             _id: new ObjectId(searchTicketId.searchTicketId),
