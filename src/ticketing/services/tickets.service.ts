@@ -31,7 +31,9 @@ export interface Ticket extends TicketRequest {
     ticketId: string;
     ticketStatus: TicketStatus;
 }
-
+/**
+ * Service for handling all tickets agnostic to any external accesspont e.g.: controller, scheduler etc.
+ */
 @Injectable()
 export class TicketsService {
     private readonly logger = new Logger(TicketsService.name);

@@ -1,7 +1,8 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { HashingService } from '../../crypto/services/hashing.service';
 import { Ticket, TicketsService } from '../services/tickets.service';
-import { TicketRequestDto, TicketResponseDto, TicketsController } from './tickets.controller';
+import { TicketsController } from './tickets.controller';
+import { TicketRequestDto, TicketResponseDto } from './tickets.dto';
 
 jest.mock('../services/tickets.service');
 
