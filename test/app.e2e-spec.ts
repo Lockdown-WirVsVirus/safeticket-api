@@ -1,6 +1,6 @@
 import * as request from 'supertest';
 import { Test, TestingModule } from '@nestjs/testing';
-import { INestApplication } from '@nestjs/common';
+import { INestApplication, ValidationPipe } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import { MongoMemoryServer } from 'mongodb-memory-server';
 import { TicketingModule } from '../src/ticketing/ticketing.module';
@@ -73,7 +73,7 @@ describe('End-2-End Testing', () => {
                 });
         });
 
-        it(
+        /**  it(
             'search created ticket',
             async () => {
                 return await request(app.getHttpServer())
@@ -93,7 +93,7 @@ describe('End-2-End Testing', () => {
                     });
             },
             timeout,
-        );
+        ); */
 
         it(
             'search all created tickets by identity',
