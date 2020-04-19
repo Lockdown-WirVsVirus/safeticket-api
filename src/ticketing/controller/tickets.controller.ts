@@ -2,8 +2,8 @@ import { Body, Controller, Get, HttpCode, Logger, Param, Post, HttpException, Ht
 import { ApiTags } from '@nestjs/swagger';
 import { HashingService } from '../services/hashing.service';
 import { Address, Identity, Ticket, TicketsService, TicketStatus, TicketID } from '../services/tickets.service';
-import { MinLength, IsNotEmpty, IsDate, Length } from 'class-validator';
-import { validate } from 'class-validator';
+import { MinLength, IsNotEmpty, Length, IsDateString, ValidateIf } from 'class-validator';
+import { ValidationPipe } from '../../validation/validationpipe';
 
 export class TicketIDDto implements TicketID {
     @IsNotEmpty()
@@ -11,7 +11,7 @@ export class TicketIDDto implements TicketID {
 }
 
 export class IdentityDto implements Identity {
-    @Length(1000)
+    @IsNotEmpty()
     hashedPassportId: string;
 }
 
@@ -47,15 +47,15 @@ export class AddressDto implements Address {
 export class TicketRequestDto {
     @IsNotEmpty()
     passportId: string;
-    reason: string;
     @IsNotEmpty()
     startAddress: AddressDto;
     @IsNotEmpty()
     endAddress: AddressDto;
-    @IsDate()
+    @IsDateString()
     validFromDateTime: Date;
-    @IsDate()
+    @IsDateString()
     validToDateTime: Date;
+    reason: string;
 }
 
 @ApiTags('ticket')
@@ -66,12 +66,7 @@ export class TicketsController {
     constructor(private readonly ticketsService: TicketsService, private readonly hashingService: HashingService) {}
 
     @Post()
-    async createTicket(@Body() ticketDto: TicketRequestDto): Promise<TicketResponseDto> {
-        validate(ticketDto).then(errors => {
-            if (errors.length > 0) {
-                throw new HttpException('BAD_REQUEST', HttpStatus.BAD_REQUEST);
-            }
-        });
+    async createTicket(@Body(new ValidationPipe()) ticketDto: TicketRequestDto): Promise<TicketResponseDto> {
         return this.ticketsService.createTicket({
             hashedPassportId: this.hashingService.hashPassportId(ticketDto.passportId),
             reason: ticketDto.reason,
@@ -83,18 +78,13 @@ export class TicketsController {
     }
 
     @Get(':ticketId')
-    async getTicket(@Param('ticketId') ticketId: TicketIDDto): Promise<TicketResponseDto> {
-        validate(ticketId).then(errors => {
-            if (errors.length > 0) {
-                throw new HttpException('BAD_REQUEST', HttpStatus.BAD_REQUEST);
-            }
-        });
+    async getTicket(@Param('ticketId', new ValidationPipe()) ticketId: TicketIDDto): Promise<TicketResponseDto> {
         return this.ticketsService.findTicket(ticketId);
     }
 
     @HttpCode(200)
     @Post('/for/identity')
-    async retrieveTicketsForIdentity(@Body() identity: IdentityDto): Promise<TicketResponseDto[]> {
+    async retrieveTicketsForIdentity(@Body(new ValidationPipe()) identity: IdentityDto): Promise<TicketResponseDto[]> {
         return this.ticketsService.retrieveByIdentity(identity);
     }
 }

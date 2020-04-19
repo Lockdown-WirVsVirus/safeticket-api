@@ -59,7 +59,7 @@ describe('End-2-End Testing', () => {
             country: 'Germany',
         },
         validFromDateTime: '2020-04-01T08:00:00.000Z',
-        validToDateTime: '2020-04-01T10:00:00.000Z',
+        validToDateTime: '2020-03-01T00:00:00.000Z',
     };
 
     describe('Ticketing', () => {
@@ -120,6 +120,18 @@ describe('End-2-End Testing', () => {
             timeout,
         );
     });
+
+    it(
+        'can not create Ticket because id is wrong',
+        async () => {
+            partyTicket.passportId = '';
+            return await request(app.getHttpServer())
+                .post('/api/v1/tickets')
+                .send(partyTicket)
+                .expect(400);
+        },
+        timeout,
+    );
 
     describe('Auth', () => {
         it(
