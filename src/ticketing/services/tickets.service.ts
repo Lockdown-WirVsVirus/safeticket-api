@@ -51,7 +51,14 @@ export class TicketsService {
     async createTicket(ticketToCreate: TicketRequest): Promise<Ticket> {
         let numberOfTickets = await this.ticketModel
             .find({
-                validToDateTime: ticketToCreate.validToDateTime,
+                validToDateTime: {
+                    $gte: ticketToCreate.validFromDateTime,
+                    $lte: ticketToCreate.validToDateTime,
+                },
+                validFromDateTime: {
+                    $gte: ticketToCreate.validFromDateTime,
+                    $lte: ticketToCreate.validToDateTime,
+                },
                 hashedPassportId: ticketToCreate.hashedPassportId,
             })
             .count();
