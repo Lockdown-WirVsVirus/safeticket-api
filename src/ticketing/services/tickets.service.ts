@@ -49,12 +49,18 @@ export class TicketsService {
      * @param ticketToCreate the new ticket to create.
      */
     async createTicket(ticketToCreate: TicketRequest): Promise<Ticket> {
-        let numberOfTickets = await this.ticketModel
+        let numberOfTicketsValidTo = await this.ticketModel
             .find({
                 validToDateTime: {
                     $gte: ticketToCreate.validFromDateTime,
                     $lte: ticketToCreate.validToDateTime,
                 },
+                hashedPassportId: ticketToCreate.hashedPassportId,
+            })
+            .count();
+
+        let numberOfTicketsValidEnd = await this.ticketModel
+            .find({
                 validFromDateTime: {
                     $gte: ticketToCreate.validFromDateTime,
                     $lte: ticketToCreate.validToDateTime,
@@ -62,7 +68,7 @@ export class TicketsService {
                 hashedPassportId: ticketToCreate.hashedPassportId,
             })
             .count();
-        if (numberOfTickets > 0) {
+        if (numberOfTicketsValidEnd > 0 || numberOfTicketsValidTo > 0) {
             throw new HttpException('Ticket exist', HttpStatus.CONFLICT);
         }
         return new this.ticketModel(ticketToCreate).save();
