@@ -3,8 +3,6 @@ import { InjectModel } from '@nestjs/mongoose';
 import { ObjectId } from 'mongodb';
 import { Model } from 'mongoose';
 import { TicketModel } from './tickets.schema';
-import { TicketIDDto } from '../controller/tickets.controller';
-import { validate, validateOrReject } from 'class-validator';
 
 export interface TicketID {
     searchTicketId: string;
@@ -85,7 +83,7 @@ export class TicketsService {
     }
     /**
      *Find one ticket by ticket id.
-     * @param searchTicketId the ticket id of ticket to search
+     * @param searchTicketId the ticket id of the ticket to search
      */
     async findTicket(searchTicketId: string): Promise<Ticket> {
         const foundTicket: Ticket = await this.ticketModel.findOne({

@@ -1,24 +1,25 @@
-import * as request from 'supertest';
-import { Test, TestingModule } from '@nestjs/testing';
 import { INestApplication, ValidationPipe } from '@nestjs/common';
-import { MongooseModule } from '@nestjs/mongoose';
-import { MongoMemoryServer } from 'mongodb-memory-server';
-import { TicketingModule } from '../src/ticketing/ticketing.module';
-import { AuthModule } from '../src/auth/auth.module';
 import { ConfigModule } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
+import { MongooseModule } from '@nestjs/mongoose';
+import { Test, TestingModule } from '@nestjs/testing';
+import { MongoMemoryServer } from 'mongodb-memory-server';
+import { CryptoModule } from '../src/crypto/crypto.module';
+import * as request from 'supertest';
+import { AuthModule } from '../src/auth/auth.module';
+import { TicketingModule } from '../src/ticketing/ticketing.module';
 
 describe('End-2-End Testing', () => {
     let app: INestApplication;
-    let mongod: MongoMemoryServer;
+    let mongoDB: MongoMemoryServer;
 
     const timeout: number = 5_000;
 
     beforeEach(async () => {
-        mongod = new MongoMemoryServer();
-        const uri = await mongod.getUri();
+        mongoDB = new MongoMemoryServer();
+        const uri = await mongoDB.getUri();
 
-        console.log('** start in memory mongodb: ', await mongod.getDbName());
+        console.log('** start in memory mongodb: ', await mongoDB.getDbName());
 
         const moduleFixture: TestingModule = await Test.createTestingModule({
             imports: [
@@ -26,6 +27,7 @@ describe('End-2-End Testing', () => {
                     envFilePath: ['test/.env.test'],
                 }),
                 MongooseModule.forRoot(uri),
+                CryptoModule,
                 AuthModule,
                 TicketingModule,
             ],
@@ -37,11 +39,11 @@ describe('End-2-End Testing', () => {
     }, timeout);
 
     afterEach(async () => {
-        await mongod.stop();
+        await mongoDB.stop();
         await app.close();
     }, timeout);
 
-    const hashedPassportId: string = 'HASHED_LXXXXXXX';
+    const hashedPassportId: string = 'df6c420ab8b18fba7230cf495638f3400132f896817f52d8bf0c717730340ce7';
     const partyTicket = {
         passportId: 'LXXXXXXX',
         reason: 'Party',
@@ -65,7 +67,7 @@ describe('End-2-End Testing', () => {
 
     describe('Ticketing', () => {
         it('should create and get ticket', async () => {
-            return await request(app.getHttpServer())
+            await request(app.getHttpServer())
                 .post('/api/v1/tickets')
                 .send(partyTicket)
                 .expect(201)
@@ -77,13 +79,13 @@ describe('End-2-End Testing', () => {
         it(
             'search created ticket',
             async () => {
-                return await request(app.getHttpServer())
+                await request(app.getHttpServer())
                     .post('/api/v1/tickets')
                     .send(partyTicket)
                     .expect(201)
                     .then(async creationResponse => {
                         const createdTicket = creationResponse.body;
-                        return await request(app.getHttpServer())
+                        await request(app.getHttpServer())
                             .get('/api/v1/tickets/' + creationResponse.body.ticketId)
                             .send()
                             .expect(200)
@@ -99,13 +101,13 @@ describe('End-2-End Testing', () => {
         it(
             'search all created tickets by identity',
             async () => {
-                return await request(app.getHttpServer())
+                await request(app.getHttpServer())
                     .post('/api/v1/tickets')
                     .send(partyTicket)
                     .expect(201)
                     .then(async creationResponse => {
                         const createdTicket = creationResponse.body;
-                        return await request(app.getHttpServer())
+                        await request(app.getHttpServer())
                             .post('/api/v1/tickets/for/identity')
                             .send({
                                 hashedPassportId: createdTicket.hashedPassportId,
@@ -167,7 +169,7 @@ describe('End-2-End Testing', () => {
         it(
             'should create jwt and use it',
             async () => {
-                return await request(app.getHttpServer())
+                await request(app.getHttpServer())
                     .post('/api/v1/auth/token')
                     .send({
                         passportId: 'LXXXXX',

@@ -1,8 +1,8 @@
 import { Logger, Module } from '@nestjs/common';
 import { JwtModule } from '@nestjs/jwt';
-import { TicketingModule } from '../ticketing/ticketing.module';
-import { AuthController } from './auth.controller';
-import { AuthService } from './auth.service';
+import { CryptoModule } from '../crypto/crypto.module';
+import { AuthController } from './controller/auth.controller';
+import { AuthService } from './services/auth.service';
 
 @Module({
     imports: [
@@ -12,8 +12,7 @@ import { AuthService } from './auth.service';
                 secret: process.env.JWT_SECRET || 'ShVmYq3t6w9y$B&E)H@McQfTjWnZr4u7',
             }),
         }),
-        // TODO: move HashingService
-        TicketingModule,
+        CryptoModule,
     ],
     providers: [AuthService],
     exports: [AuthService],

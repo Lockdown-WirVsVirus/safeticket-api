@@ -1,9 +1,9 @@
 import { JwtService } from '@nestjs/jwt';
 import { Test, TestingModule } from '@nestjs/testing';
 import { AuthController } from './auth.controller';
-import { AuthService } from './auth.service';
+import { AuthService } from '../services/auth.service';
 
-jest.mock('./auth.service');
+jest.mock('../services/auth.service');
 
 describe('Auth Controller', () => {
     let sut: AuthController;
@@ -29,10 +29,12 @@ describe('Auth Controller', () => {
         sut = module.get<AuthController>(AuthController);
         authService = module.get<AuthService>(AuthService);
 
-        jest.spyOn(authService, 'generateToken').mockReturnValue({
-            token: '123.abc.xyz',
-            jwtPayload: { hashedPassportId: 'HASHED_TOKEN' },
-        });
+        jest.spyOn(authService, 'generateToken').mockReturnValue(
+            Promise.resolve({
+                token: '123.abc.xyz',
+                jwtPayload: { hashedPassportId: 'HASHED_TOKEN' },
+            }),
+        );
     });
 
     afterEach(() => {
@@ -45,7 +47,7 @@ describe('Auth Controller', () => {
 
     describe('Generate Token', () => {
         it('Should create a jwt', async () => {
-            const jwt = sut.getToken({ passportId: 'X' });
+            const jwt = await sut.getToken({ passportId: 'X' });
 
             expect(jwt.token).toBe('123.abc.xyz');
             expect(jwt.jwtPayload.hashedPassportId).toBe('HASHED_TOKEN');
