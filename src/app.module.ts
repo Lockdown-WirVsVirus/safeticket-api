@@ -1,16 +1,28 @@
 import { Module } from '@nestjs/common';
-import { TicketsController } from './controller/tickets.controller';
-import { TicketsService } from './services/tickets.service';
+import { ConfigModule } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
-import { ticketSchema } from './schema/tickets.schema';
-import { HashingService } from './services/hashing.service';
+import { AuthModule } from './auth/auth.module';
+import { CryptoModule } from './crypto/crypto.module';
+import { TicketingModule } from './ticketing/ticketing.module';
 
 @Module({
-  imports: [
-    MongooseModule.forRoot('mongodb://root:example@localhost:27017/admin'),
-    MongooseModule.forFeature([{ name: 'Tickets', schema: ticketSchema }]),
-  ],
-  controllers: [TicketsController],
-  providers: [TicketsService, HashingService],
+    imports: [
+        ConfigModule.forRoot({
+            // if a variable is found in multiple files, the first one takes precedence.
+            envFilePath: ['.env.local', '.env'],
+        }),
+        MongooseModule.forRoot(process.env.MONGODB_URI),
+        CryptoModule,
+        TicketingModule,
+        AuthModule,
+    ],
 })
-export class AppModule {}
+export class AppModule {
+    constructor() {
+        const MONGODB_URI = process.env.MONGODB_URI;
+        if (!MONGODB_URI) {
+            console.error('no MONGODB_URI found. Please set.');
+            process.exit(1);
+        }
+    }
+}
