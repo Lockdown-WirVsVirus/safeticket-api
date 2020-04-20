@@ -1,20 +1,15 @@
 import { Body, Controller, Get, HttpCode, HttpException, HttpStatus, Logger, Param, Post } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
+import { MinLength, IsNotEmpty, Length, IsDateString } from 'class-validator';
 import { HashingService } from '../../crypto/services/hashing.service';
-import { Address, Identity, Ticket, TicketsService, TicketStatus } from '../services/tickets.service';
+import { Address, Identity, Ticket, TicketsService, TicketStatus, TicketID } from '../services/tickets.service';
 
-export class TicketRequestDto {
-    passportId: string;
-    reason: string;
-
-    startAddress: AddressDto;
-    endAddress: AddressDto;
-
-    validFromDateTime: Date;
-    validToDateTime: Date;
+export class TicketIDDto implements TicketID {
+    searchTicketId: string;
 }
 
 export class IdentityDto implements Identity {
+    @IsNotEmpty()
     hashedPassportId: string;
 }
 
@@ -34,11 +29,32 @@ export class TicketResponseDto implements Ticket {
 }
 
 export class AddressDto implements Address {
+    @IsNotEmpty()
     street: string;
+    @IsNotEmpty()
     houseNumber: string;
+    @IsNotEmpty()
+    @Length(5)
     zipCode: string;
+    @IsNotEmpty()
     city: string;
+    @MinLength(2)
     country: string;
+}
+
+export class TicketRequestDto {
+    @IsNotEmpty()
+    passportId: string;
+    @IsNotEmpty()
+    startAddress: AddressDto;
+    @IsNotEmpty()
+    endAddress: AddressDto;
+    @IsDateString()
+    validFromDateTime: Date;
+    @IsDateString()
+    validToDateTime: Date;
+    @IsNotEmpty()
+    reason: string;
 }
 
 @ApiTags('ticket')

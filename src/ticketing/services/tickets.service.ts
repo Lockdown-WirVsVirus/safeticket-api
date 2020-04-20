@@ -1,8 +1,12 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable, Logger, HttpException, HttpStatus } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { ObjectId } from 'mongodb';
 import { Model } from 'mongoose';
 import { TicketModel } from './tickets.schema';
+
+export interface TicketID {
+    searchTicketId: string;
+}
 
 export interface Address {
     street: string;
@@ -43,6 +47,28 @@ export class TicketsService {
      * @param ticketToCreate the new ticket to create.
      */
     async createTicket(ticketToCreate: TicketRequest): Promise<Ticket> {
+        let numberOfTicketsValidTo = await this.ticketModel
+            .find({
+                validToDateTime: {
+                    $gte: ticketToCreate.validFromDateTime,
+                    $lte: ticketToCreate.validToDateTime,
+                },
+                hashedPassportId: ticketToCreate.hashedPassportId,
+            })
+            .count();
+
+        let numberOfTicketsValidEnd = await this.ticketModel
+            .find({
+                validFromDateTime: {
+                    $gte: ticketToCreate.validFromDateTime,
+                    $lte: ticketToCreate.validToDateTime,
+                },
+                hashedPassportId: ticketToCreate.hashedPassportId,
+            })
+            .count();
+        if (numberOfTicketsValidEnd > 0 || numberOfTicketsValidTo > 0) {
+            throw new HttpException('Ticket exist', HttpStatus.CONFLICT);
+        }
         return new this.ticketModel(ticketToCreate).save();
     }
 
