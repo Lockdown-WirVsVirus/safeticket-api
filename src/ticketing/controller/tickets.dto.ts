@@ -54,7 +54,7 @@ export class TicketRequestDto {
 
 export class IdentityDto implements Identity {
     @IsNotEmpty()
-    @Length(24, 24)
+    @Length(64, 64)
     @ApiProperty({ description: 'The hashed passport id which has been generated during creation of ticket' })
     hashedPassportId: string;
 }
@@ -63,7 +63,7 @@ export class TicketResponseDto implements Ticket {
     @ApiProperty({ readOnly: true })
     ticketId: string;
 
-    @Length(24, 24)
+    @Length(64, 64)
     @ApiProperty({ readOnly: true })
     hashedPassportId: string;
 
