@@ -1,9 +1,9 @@
-import { HttpException, HttpStatus, Injectable, Logger } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { ObjectId } from 'mongodb';
 import { Model } from 'mongoose';
+import { err, ok, Result } from 'neverthrow';
 import { TicketModel } from './tickets.schema';
-import { Result, ok, Ok, err, Err } from 'neverthrow';
 
 /**
  * Enumeration of reason why ticket creation failed.
