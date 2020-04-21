@@ -1,8 +1,8 @@
-import { Body, Controller, Get, HttpCode, HttpException, HttpStatus, Logger, Param, Post } from '@nestjs/common';
-import { ApiTags, ApiProperty } from '@nestjs/swagger';
+import { Body, Controller, Get, HttpCode, HttpException, HttpStatus, Param, Post } from '@nestjs/common';
+import { ApiTags } from '@nestjs/swagger';
 import { HashingService } from '../../crypto/services/hashing.service';
-import { Address, Identity, Ticket, TicketsService, TicketStatus } from '../services/tickets.service';
-import { TicketRequestDto, TicketResponseDto, IdentityDto } from './tickets.dto';
+import { TicketsService } from '../services/tickets.service';
+import { IdentityDto, TicketRequestDto, TicketResponseDto } from './tickets.dto';
 
 @ApiTags('ticket')
 @Controller('api/v1/tickets')

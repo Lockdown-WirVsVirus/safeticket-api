@@ -1,7 +1,8 @@
-import { LogLevel } from '@nestjs/common';
+import { LogLevel, ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { AppModule } from './app.module';
+
 import { HttpExceptionFilter } from './http-exception.filter';
 
 const port = process.env.PORT || 3000;
@@ -14,6 +15,7 @@ async function bootstrap() {
 
     //register global filter to avoid exception information propagation
     app.useGlobalFilters(new HttpExceptionFilter());
+    app.useGlobalPipes(new ValidationPipe());
 
     // cors of course
     app.enableCors();
@@ -30,7 +32,6 @@ async function bootstrap() {
     // doc will be published under HOST:PORT/api-doc
     // json will be published under HOST:PORT/api-doc-json
     SwaggerModule.setup('api-doc', app, document);
-
     await app.listen(port);
     console.log('server started at port ' + port);
 }

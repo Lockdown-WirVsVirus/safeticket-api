@@ -1,4 +1,4 @@
-import { INestApplication } from '@nestjs/common';
+import { INestApplication, ValidationPipe } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { MongooseModule } from '@nestjs/mongoose';
@@ -34,6 +34,7 @@ describe('End-2-End Testing', () => {
         }).compile();
 
         app = moduleFixture.createNestApplication();
+        app.useGlobalPipes(new ValidationPipe());
         await app.init();
     }, timeout);
 
@@ -122,6 +123,47 @@ describe('End-2-End Testing', () => {
             timeout,
         );
     });
+
+    it(
+        'can not create Ticket because ticket exist',
+        async () => {
+            return await request(app.getHttpServer())
+                .post('/api/v1/tickets')
+                .send(partyTicket)
+                .expect(201)
+                .then(async createError => {
+                    await request(app.getHttpServer())
+                        .post('/api/v1/tickets')
+                        .send(partyTicket)
+                        .expect(409);
+                });
+        },
+        timeout,
+    );
+
+    it(
+        'can not create Ticket because date is wrong',
+        async () => {
+            partyTicket.validToDateTime = '';
+            return await request(app.getHttpServer())
+                .post('/api/v1/tickets')
+                .send(partyTicket)
+                .expect(400);
+        },
+        timeout,
+    );
+
+    it(
+        'can not create Ticket because id is wrong',
+        async () => {
+            partyTicket.passportId = '';
+            return await request(app.getHttpServer())
+                .post('/api/v1/tickets')
+                .send(partyTicket)
+                .expect(400);
+        },
+        timeout,
+    );
 
     describe('Auth', () => {
         it(
