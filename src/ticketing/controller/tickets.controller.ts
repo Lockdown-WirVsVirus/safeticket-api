@@ -37,16 +37,7 @@ export class TicketsController {
                 })
                 .map(successfullyCreatedTicket => {
                     this.logger.log(`Created new ticket: ${successfullyCreatedTicket.ticketId}`);
-                    resolve({
-                        ticketId: successfullyCreatedTicket.ticketId,
-                        ticketStatus: successfullyCreatedTicket.ticketStatus,
-                        validFromDateTime: successfullyCreatedTicket.validFromDateTime,
-                        validToDateTime: successfullyCreatedTicket.validToDateTime,
-                        hashedPassportId: successfullyCreatedTicket.hashedPassportId,
-                        reason: successfullyCreatedTicket.reason,
-                        startAddress: successfullyCreatedTicket.startAddress,
-                        endAddress: successfullyCreatedTicket.endAddress,
-                    });
+                    resolve(this.mapToDto(successfullyCreatedTicket));
                 });
         });
     }
@@ -59,19 +50,37 @@ export class TicketsController {
             throw new HttpException('Ticket not Found', HttpStatus.NOT_FOUND);
         }
 
-        return foundTicket;
+        return this.mapToDto(foundTicket);
     }
 
     @HttpCode(200)
     @Post('/for/identity')
     async retrieveTicketsForIdentity(@Body() identity: IdentityDto): Promise<TicketResponseDto[]> {
-        const ticketsOfIdentity: TicketResponseDto[] = await this.ticketsService.retrieveByIdentity(identity);
+        const ticketsOfIdentity: Ticket[] = await this.ticketsService.retrieveByIdentity(identity);
 
         if (!ticketsOfIdentity) {
             // return array if not found by ticket service
             return [];
         }
 
-        return ticketsOfIdentity;
+        return ticketsOfIdentity.map(ticket => this.mapToDto(ticket));
+    }
+
+    /**
+     * Maps internal ticket representation to external dto representation.
+     * Other with some information of internal ticket representation will be leaked to external resources.
+     * @param ticket the internal representation of an ticket
+     */
+    private mapToDto(ticket: Ticket): TicketResponseDto {
+        return {
+            ticketId: ticket.ticketId,
+            ticketStatus: ticket.ticketStatus,
+            validFromDateTime: ticket.validFromDateTime,
+            validToDateTime: ticket.validToDateTime,
+            hashedPassportId: ticket.hashedPassportId,
+            reason: ticket.reason,
+            startAddress: ticket.startAddress,
+            endAddress: ticket.endAddress,
+        };
     }
 }
