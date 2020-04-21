@@ -55,7 +55,13 @@ export class TicketRequestDto {
 export class IdentityDto implements Identity {
     @IsNotEmpty()
     @Length(64, 64)
-    @ApiProperty({ description: 'The hashed passport id which has been generated during creation of ticket' })
+    @ApiProperty({
+        readOnly: true,
+        minLength: 64,
+        maxLength: 64,
+        example: 'c293d36062172953e4319371112e407f78e04c7aa2bc46bcdb2a3d683f6f4f04',
+        description: 'The hashed passport id which has been generated during creation of ticket',
+    })
     hashedPassportId: string;
 }
 
@@ -64,7 +70,13 @@ export class TicketResponseDto implements Ticket {
     ticketId: string;
 
     @Length(64, 64)
-    @ApiProperty({ readOnly: true })
+    @ApiProperty({
+        readOnly: true,
+        minLength: 64,
+        maxLength: 64,
+        example: 'c293d36062172953e4319371112e407f78e04c7aa2bc46bcdb2a3d683f6f4f04',
+        description: 'The hashed passport id which has been generated during creation of ticket',
+    })
     hashedPassportId: string;
 
     @ApiProperty()
