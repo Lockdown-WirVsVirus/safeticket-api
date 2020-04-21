@@ -3,6 +3,7 @@ import { HashingService } from '../../crypto/services/hashing.service';
 import { Ticket, TicketsService } from '../services/tickets.service';
 import { TicketsController } from './tickets.controller';
 import { TicketRequestDto, TicketResponseDto } from './tickets.dto';
+import { ok } from 'neverthrow';
 
 jest.mock('../services/tickets.service');
 
@@ -47,14 +48,14 @@ describe('TicketsController', () => {
             validFromDateTime: new Date(),
             validToDateTime: new Date(),
         };
-        jest.spyOn(mockedTicketService, 'createTicket').mockReturnValue(Promise.resolve(mockedTicket));
+        jest.spyOn(mockedTicketService, 'createTicket').mockReturnValue(Promise.resolve(ok(mockedTicket)));
     });
 
     afterEach(() => {
         jest.resetAllMocks();
     });
 
-    describe('Request ticket ressource', () => {
+    describe('Request ticket resource', () => {
         it('Should create a ticket', async () => {
             const ticketRequest: TicketRequestDto = {
                 passportId: 'secret-id',
@@ -85,7 +86,7 @@ describe('TicketsController', () => {
             };
 
             // mock the response depending on the ticket request
-            jest.spyOn(mockedTicketService, 'createTicket').mockReturnValue(Promise.resolve(mockedTicketResponse));
+            jest.spyOn(mockedTicketService, 'createTicket').mockReturnValue(Promise.resolve(ok(mockedTicketResponse)));
 
             // test call to create ticket
             const createdTicket: TicketResponseDto = await sut.createTicket(ticketRequest);
