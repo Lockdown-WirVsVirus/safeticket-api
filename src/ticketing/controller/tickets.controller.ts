@@ -1,8 +1,9 @@
 import { Body, Controller, Get, HttpCode, HttpException, HttpStatus, Param, Post, Logger } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { HashingService } from '../../crypto/services/hashing.service';
-import { TicketsService, TicketCreationFailureReason } from '../services/tickets.service';
+import { TicketsService, TicketCreationFailureReason, Ticket, TicketCreationFailure } from '../services/tickets.service';
 import { IdentityDto, TicketRequestDto, TicketResponseDto } from './tickets.dto';
+import { Result } from 'neverthrow';
 
 @ApiTags('ticket')
 @Controller('api/v1/tickets')
@@ -13,7 +14,7 @@ export class TicketsController {
 
     @Post()
     async createTicket(@Body() ticketDto: TicketRequestDto): Promise<TicketResponseDto> {
-        const createdTicketResult = await this.ticketsService.createTicket({
+        const createdTicketResult: Result<Ticket, TicketCreationFailure> = await this.ticketsService.createTicket({
             hashedPassportId: await this.hashingService.hashPassportId(ticketDto.passportId),
             reason: ticketDto.reason,
             startAddress: ticketDto.startAddress,
@@ -22,6 +23,7 @@ export class TicketsController {
             validToDateTime: ticketDto.validToDateTime,
         });
 
+        //wrap result handling into promise
         return new Promise((resolve, reject) => {
             createdTicketResult
                 .mapErr(ticketCreationFailure => {
