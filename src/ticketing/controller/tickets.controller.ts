@@ -103,7 +103,7 @@ export class TicketsController {
         return ticketsOfIdentity;
     }
 
-    @Cron('* 58 23 * * *')
+    @Cron('* * 0 * * *')
     async invalidTickets(): Promise<void> {
         this.ticketsService.invalidTickets();
     }

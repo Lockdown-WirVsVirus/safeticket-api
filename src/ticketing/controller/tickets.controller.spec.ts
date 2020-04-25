@@ -48,6 +48,7 @@ describe('TicketsController', () => {
             validToDateTime: new Date(),
         };
         jest.spyOn(mockedTicketService, 'createTicket').mockReturnValue(Promise.resolve(mockedTicket));
+        jest.spyOn(mockedTicketService, 'invalidTickets').mockReturnValue(Promise.resolve());
     });
 
     afterEach(() => {
@@ -95,6 +96,12 @@ describe('TicketsController', () => {
             expect(createdTicket.hashedPassportId).toBeTruthy();
             expect(createdTicket.ticketStatus).toBe('CREATED');
             expect(createdTicket.hashedPassportId).toBe('6493f4ecc943cfdb31bc5b71f909cfa2f1f206d91618125b0f0d1eddb3a77d43');
+        });
+    });
+
+    describe('invalid Ticket', () => {
+        it('invalid a ticket in db', async () => {
+            await sut.invalidTickets();
         });
     });
 });

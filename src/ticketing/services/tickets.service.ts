@@ -100,13 +100,11 @@ export class TicketsService {
 
     async invalidTickets(): Promise<void> {
         let dayBeginning = new Date();
-        dayBeginning.setHours(0, 0, 0, 0);
 
         this.ticketModel.updateMany(
             {
                 validToDateTime: {
                     $lte: new Date(),
-                    $gte: dayBeginning,
                 },
                 ticketStatus: 'CREATED',
             },
