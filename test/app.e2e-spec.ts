@@ -99,14 +99,11 @@ describe('End-2-End Testing', () => {
         );
 
         it(
-            'generate pdf',
+            'generate pdf but request is wrong',
             async () => {
                 await request(app.getHttpServer())
                     .post('/api/v1/tickets/generatePDF')
-                    .expect(200)
-                    .then(async creationResponse => {
-                        console.debug(creationResponse.text);
-                    });
+                    .expect(400);
             },
             timeout,
         );

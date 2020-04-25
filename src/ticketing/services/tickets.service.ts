@@ -10,6 +10,14 @@ export interface TicketID {
     searchTicketId: string;
 }
 
+export interface PDFID {
+    pdif: string;
+    firstname: string;
+    lastname: string;
+    passportID: string;
+    ticketID: string;
+}
+
 export interface Address {
     street: string;
     houseNumber: string;
@@ -95,39 +103,38 @@ export class TicketsService {
         return foundTicket;
     }
 
-    async generateTicketPDF(): Promise<String> {
-        const pdf = async () => {
+    async generateTicketPDF(pdfrequest: PDFID): Promise<String> {
+        let ticket = await this.ticketModel.find({
+            id: new ObjectId(pdfrequest.ticketID),
+        });
+        const pdf = async (pdfrequest, ticket) => {
             const doc = new PDFDocument();
-            // Add another page
-            doc.addPage()
-                .fontSize(25)
-                .text('Here is some vector graphics...', 100, 100);
+            doc.text('Ticket#', 100, 100);
+            doc.text('Ticketid', 150, 100);
+            doc.text('qr hier', 100, 200);
 
-            // Draw a triangle
-            doc.save()
-                .moveTo(100, 150)
-                .lineTo(100, 250)
-                .lineTo(200, 250)
-                .fill('#FF3300');
+            doc.text('Begründung', 100, 400);
+            doc.text('Reason', 200, 400);
 
-            // Apply some transforms and render an SVG path with the 'even-odd' fill rule
-            doc.scale(0.6)
-                .translate(470, -380)
-                .path('M 250,75 L 323,301 131,161 369,161 177,301 z')
-                .fill('red', 'even-odd')
-                .restore();
+            doc.text('Gültig von', 100, 450);
+            doc.text('Datum', 200, 450);
 
-            // Add some text with annotations
-            doc.addPage()
-                .fillColor('blue')
-                .text('Here is a link!', 100, 100)
-                .underline(100, 100, 160, 27, { color: '#0000FF' })
-                .link(100, 100, 160, 27, 'http://google.com/');
+            doc.text('Gültig bis', 100, 500);
+            doc.text('Datum', 200, 500);
+
+            doc.text('Gültig für', 100, 550);
+            doc.text('Max Musterman', 200, 550);
+
+            doc.text('Start-Addresse', 100, 600);
+            doc.text('Hauptstraße', 200, 600);
+
+            doc.text('Start-Addresse', 100, 650);
+            doc.text('Hauptstraße', 200, 650);
             doc.end();
             return await getStream.buffer(doc);
         };
 
-        const pdfBuffer = await pdf();
+        const pdfBuffer = await pdf(pdfrequest, ticket);
         return pdfBuffer.toString('base64');
     }
 }

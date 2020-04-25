@@ -2,7 +2,20 @@ import { Body, Controller, Get, HttpCode, HttpException, HttpStatus, Logger, Par
 import { ApiTags } from '@nestjs/swagger';
 import { MinLength, IsNotEmpty, Length, IsDateString } from 'class-validator';
 import { HashingService } from '../../crypto/services/hashing.service';
-import { Address, Identity, Ticket, TicketsService, TicketStatus, TicketID } from '../services/tickets.service';
+import { Address, Identity, Ticket, TicketsService, TicketStatus, TicketID, PDFID } from '../services/tickets.service';
+
+export class PDFRequestDTO implements PDFID {
+    @IsNotEmpty()
+    pdif: string;
+    @IsNotEmpty()
+    firstname: string;
+    @IsNotEmpty()
+    lastname: string;
+    @IsNotEmpty()
+    passportID: string;
+    @IsNotEmpty()
+    ticketID: string;
+}
 
 export class TicketIDDto implements TicketID {
     searchTicketId: string;
@@ -102,7 +115,7 @@ export class TicketsController {
 
     @HttpCode(200)
     @Post('/generatePDF')
-    async generatePDF(): Promise<String> {
-        return await this.ticketsService.generateTicketPDF();
+    async generatePDF(@Body() pdfid: PDFRequestDTO): Promise<String> {
+        return await this.ticketsService.generateTicketPDF(pdfid);
     }
 }
