@@ -125,6 +125,26 @@ describe('End-2-End Testing', () => {
     });
 
     it(
+        'invalid ticket by id',
+        async () => {
+            await request(app.getHttpServer())
+                .post('/api/v1/tickets')
+                .send(partyTicket)
+                .expect(201)
+                .then(async creationResponse => {
+                    const createdTicket = creationResponse.body;
+                    await request(app.getHttpServer())
+                        .delete('/api/v1/tickets/' + createdTicket.id)
+                        .send({
+                            ticketID: createdTicket.id,
+                        })
+                        .expect(200);
+                });
+        },
+        timeout,
+    );
+
+    it(
         'can not create Ticket because ticket exist',
         async () => {
             return await request(app.getHttpServer())

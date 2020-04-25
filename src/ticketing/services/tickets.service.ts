@@ -99,8 +99,6 @@ export class TicketsService {
     }
 
     async invalidTickets(): Promise<void> {
-        let dayBeginning = new Date();
-
         this.ticketModel.updateMany(
             {
                 validToDateTime: {
@@ -110,5 +108,17 @@ export class TicketsService {
             },
             { ticketStatus: 'EXPIRED' },
         );
+    }
+
+    async invalidTicketByID(ticketId: string): Promise<Boolean> {
+        console.debug(ticketId);
+        let doc = await this.ticketModel.update(
+            {
+                _id: new ObjectId(ticketId),
+            },
+            { ticketStatus: 'EXPIRED' },
+            { new: true },
+        );
+        return doc.status === 'EXPIRED';
     }
 }

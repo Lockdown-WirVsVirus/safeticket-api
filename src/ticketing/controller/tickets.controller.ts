@@ -1,4 +1,4 @@
-import { Body, Controller, Get, HttpCode, HttpException, HttpStatus, Logger, Param, Post } from '@nestjs/common';
+import { Body, Controller, Get, HttpCode, HttpException, HttpStatus, Logger, Param, Post, Delete } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { MinLength, IsNotEmpty, Length, IsDateString } from 'class-validator';
 import { HashingService } from '../../crypto/services/hashing.service';
@@ -106,5 +106,11 @@ export class TicketsController {
     @Cron('* * 0 * * *')
     async invalidTickets(): Promise<void> {
         this.ticketsService.invalidTickets();
+    }
+
+    @HttpCode(200)
+    @Delete(':ticketID')
+    async invalidTicketById(@Param('ticketID') ticketID: string): Promise<Boolean> {
+        return this.ticketsService.invalidTicketByID(ticketID);
     }
 }
