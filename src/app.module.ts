@@ -4,6 +4,7 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { AuthModule } from './auth/auth.module';
 import { CryptoModule } from './crypto/crypto.module';
 import { TicketingModule } from './ticketing/ticketing.module';
+import { ScheduleModule } from '@nestjs/schedule';
 
 @Module({
     imports: [
@@ -12,6 +13,7 @@ import { TicketingModule } from './ticketing/ticketing.module';
             envFilePath: ['.env.local', '.env'],
         }),
         MongooseModule.forRoot(process.env.MONGODB_URI),
+        ScheduleModule.forRoot(),
         CryptoModule,
         TicketingModule,
         AuthModule,

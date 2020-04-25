@@ -3,6 +3,7 @@ import { ApiTags } from '@nestjs/swagger';
 import { MinLength, IsNotEmpty, Length, IsDateString } from 'class-validator';
 import { HashingService } from '../../crypto/services/hashing.service';
 import { Address, Identity, Ticket, TicketsService, TicketStatus, TicketID } from '../services/tickets.service';
+import { Cron } from '@nestjs/schedule';
 
 export class TicketIDDto implements TicketID {
     searchTicketId: string;
@@ -14,6 +15,7 @@ export class IdentityDto implements Identity {
 }
 
 export class TicketResponseDto implements Ticket {
+    status: TicketStatus;
     ticketId: string;
 
     hashedPassportId: string;
@@ -73,6 +75,7 @@ export class TicketsController {
             endAddress: ticketDto.endAddress,
             validFromDateTime: ticketDto.validFromDateTime,
             validToDateTime: ticketDto.validToDateTime,
+            status: 'CREATED',
         });
     }
 
@@ -98,5 +101,10 @@ export class TicketsController {
         }
 
         return ticketsOfIdentity;
+    }
+
+    @Cron('45 * * * * *')
+    async invalidTickets(): Promise<void> {
+        this.ticketsService.invalidTickets();
     }
 }

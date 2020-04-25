@@ -33,6 +33,7 @@ export interface TicketRequest extends Identity {
 
     validFromDateTime: Date;
     validToDateTime: Date;
+    status: TicketStatus;
 }
 
 export interface Ticket extends TicketRequest {
@@ -95,5 +96,21 @@ export class TicketsService {
         });
 
         return foundTicket;
+    }
+
+    async invalidTickets(): Promise<void> {
+        let dayBeginning = new Date();
+        dayBeginning.setHours(0, 0, 0, 0);
+
+        this.ticketModel.updateMany(
+            {
+                validToDateTime: {
+                    $lte: new Date(),
+                    $gte: dayBeginning,
+                },
+                ticketStatus: 'CREATED',
+            },
+            { ticketStatus: 'EXPIRED' },
+        );
     }
 }
