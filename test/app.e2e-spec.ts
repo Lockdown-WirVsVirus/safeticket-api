@@ -72,6 +72,7 @@ describe('End-2-End Testing', () => {
                 .send(partyTicket)
                 .expect(201)
                 .then(res => {
+                    console.debug(res.body);
                     expect(res.body.hashedPassportId).toBe(hashedPassportId);
                 });
         });
