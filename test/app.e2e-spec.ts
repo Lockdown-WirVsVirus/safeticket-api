@@ -99,6 +99,19 @@ describe('End-2-End Testing', () => {
         );
 
         it(
+            'generate pdf',
+            async () => {
+                await request(app.getHttpServer())
+                    .post('/api/v1/tickets/generatePDF')
+                    .expect(200)
+                    .then(async creationResponse => {
+                        console.debug(creationResponse.text);
+                    });
+            },
+            timeout,
+        );
+
+        it(
             'search all created tickets by identity',
             async () => {
                 await request(app.getHttpServer())

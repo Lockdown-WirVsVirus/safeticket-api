@@ -99,4 +99,10 @@ export class TicketsController {
 
         return ticketsOfIdentity;
     }
+
+    @HttpCode(200)
+    @Post('/generatePDF')
+    async generatePDF(): Promise<String> {
+        return await this.ticketsService.generateTicketPDF();
+    }
 }
