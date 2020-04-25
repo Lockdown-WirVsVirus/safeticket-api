@@ -1,109 +1,102 @@
+import { Body, Controller, Get, HttpCode, HttpException, HttpStatus, Logger, Param, Post } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
-import {
-  Controller,
-  Get,
-  Post,
-  Body,
-  Param,
-  Logger,
-  HttpCode,
-} from '@nestjs/common';
-import {
-  TicketsService,
-  Identity,
-  Ticket,
-  Address,
-  TicketStatus,
-  ITicketID,
-} from '../services/tickets.service';
-import { HashingService } from '../services/hashing.service';
+import { MinLength, IsNotEmpty, Length, IsDateString } from 'class-validator';
+import { HashingService } from '../../crypto/services/hashing.service';
+import { Address, Identity, Ticket, TicketsService, TicketStatus, TicketID } from '../services/tickets.service';
 
-export class TicketRequestDto {
-  passportId: string;
-  reason: string;
-
-  startAddress: AddressDto;
-  endAddress: AddressDto;
-
-  validFromDateTime: Date;
-  validToDateTime: Date;
-}
-
-export class TicketIDDTO implements ITicketID{
-  ticketID: string;
+export class TicketIDDto implements TicketID {
+    searchTicketId: string;
 }
 
 export class IdentityDto implements Identity {
-  hashedPassportId: string;
+    @IsNotEmpty()
+    hashedPassportId: string;
 }
 
 export class TicketResponseDto implements Ticket {
-  ticketId: string;
+    ticketId: string;
 
-  hashedPassportId: string;
-  reason: string;
+    hashedPassportId: string;
+    reason: string;
 
-  startAddress: AddressDto;
-  endAddress: AddressDto;
+    startAddress: AddressDto;
+    endAddress: AddressDto;
 
-  validFromDateTime: Date;
-  validToDateTime: Date;
+    validFromDateTime: Date;
+    validToDateTime: Date;
 
-  ticketStatus: TicketStatus;
+    ticketStatus: TicketStatus;
 }
 
 export class AddressDto implements Address {
-  street: string;
-  houseNumber: string;
-  zipCode: string;
-  city: string;
-  country: string;
+    @IsNotEmpty()
+    street: string;
+    @IsNotEmpty()
+    houseNumber: string;
+    @IsNotEmpty()
+    @Length(5)
+    zipCode: string;
+    @IsNotEmpty()
+    city: string;
+    @MinLength(2)
+    country: string;
+}
+
+export class TicketRequestDto {
+    @IsNotEmpty()
+    passportId: string;
+    @IsNotEmpty()
+    startAddress: AddressDto;
+    @IsNotEmpty()
+    endAddress: AddressDto;
+    @IsDateString()
+    validFromDateTime: Date;
+    @IsDateString()
+    validToDateTime: Date;
+    @IsNotEmpty()
+    reason: string;
 }
 
 @ApiTags('ticket')
 @Controller('api/v1/tickets')
 export class TicketsController {
-  private readonly logger = new Logger(TicketsController.name);
+    private readonly logger = new Logger(TicketsController.name);
 
-  constructor(
-    private readonly ticketsService: TicketsService,
-    private readonly hashingService: HashingService,
-  ) {}
+    constructor(private readonly ticketsService: TicketsService, private readonly hashingService: HashingService) {}
 
-  @Post()
-  async createTicket(
-    @Body() ticketDto: TicketRequestDto,
-  ): Promise<TicketResponseDto> {
-    return this.ticketsService.createTicket({
-      hashedPassportId: this.hashingService.hashPassportId(
-        ticketDto.passportId,
-      ),
-      reason: ticketDto.reason,
-      startAddress: ticketDto.startAddress,
-      endAddress: ticketDto.endAddress,
-      validFromDateTime: ticketDto.validFromDateTime,
-      validToDateTime: ticketDto.validToDateTime,
-    });
-  }
+    @Post()
+    async createTicket(@Body() ticketDto: TicketRequestDto): Promise<TicketResponseDto> {
+        return this.ticketsService.createTicket({
+            hashedPassportId: await this.hashingService.hashPassportId(ticketDto.passportId),
+            reason: ticketDto.reason,
+            startAddress: ticketDto.startAddress,
+            endAddress: ticketDto.endAddress,
+            validFromDateTime: ticketDto.validFromDateTime,
+            validToDateTime: ticketDto.validToDateTime,
+        });
+    }
 
-  @Get(':ticketId')
-  async getTicket(
-    @Param('ticketId') ticketId: string,
-  ): Promise<TicketResponseDto> {
-    return this.ticketsService.findTicket(ticketId);
-  }
+    @Get(':ticketId')
+    async getTicket(@Param('ticketId') ticketId: string): Promise<TicketResponseDto> {
+        const foundTicket: TicketResponseDto = await this.ticketsService.findTicket(ticketId);
 
-  @HttpCode(200)
-  @Post('/for/identity')
-  async retrieveTicketsForIdentity(
-    @Body() identity: IdentityDto,
-  ): Promise<TicketResponseDto[]> {
-    return this.ticketsService.retrieveByIdentity(identity);
-  }
+        if (!foundTicket) {
+            throw new HttpException('Ticket not Found', HttpStatus.NOT_FOUND);
+        }
 
-  @HttpCode(200)
-  @Post("deleteTicket")
-  async deleteTicket(@Body() ticketId: TicketIDDTO): Promise<String>{
-    return this.ticketsService.deleteTicket(ticketId);
-  }
+        return foundTicket;
+    }
+
+    @HttpCode(200)
+    @Post('/for/identity')
+    async retrieveTicketsForIdentity(@Body() identity: IdentityDto): Promise<TicketResponseDto[]> {
+        const ticketsOfIdentity: TicketResponseDto[] = await this.ticketsService.retrieveByIdentity(identity);
+
+        if (!ticketsOfIdentity) {
+            // return array if not found by ticket service
+            return [];
+        }
+
+        return ticketsOfIdentity;
+    }
 }

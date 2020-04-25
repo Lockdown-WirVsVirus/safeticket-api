@@ -2,6 +2,10 @@
 -------------
 # SafeTicket API
 
+## Configuration
+
+see `.env` file and update via `.env.local` by your needs.
+
 ## Installation
 
 ```bash
