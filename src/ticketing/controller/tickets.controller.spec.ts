@@ -27,6 +27,7 @@ describe('TicketsController', () => {
         const mockedTicket: Ticket = {
             ticketId: 'testing',
             reason: 'simulation',
+            status: 'CREATED',
             startAddress: {
                 street: '',
                 houseNumber: '',
@@ -79,6 +80,7 @@ describe('TicketsController', () => {
             const mockedTicketResponse: Ticket = {
                 ticketStatus: 'CREATED',
                 ticketId: 'unique-ticket-id',
+                status: 'CREATED',
                 hashedPassportId: await hashingService.hashPassportId(ticketRequest.passportId),
                 ...ticketRequest,
             };
