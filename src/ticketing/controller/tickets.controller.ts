@@ -92,7 +92,7 @@ export class TicketsController {
         this.ticketsService.invalidTickets();
     }
 
-    @HttpCode(200)
+    @HttpCode(204)
     @Delete(':ticketID')
     async invalidTicketById(@Param('ticketID') ticketID: string): Promise<Boolean> {
         return this.ticketsService.invalidTicketByID(ticketID);

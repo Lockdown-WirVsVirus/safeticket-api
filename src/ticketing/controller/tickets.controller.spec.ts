@@ -49,8 +49,8 @@ describe('TicketsController', () => {
             validFromDateTime: new Date(),
             validToDateTime: new Date(),
         };
-        jest.spyOn(mockedTicketService, 'createTicket').mockReturnValue(Promise.resolve(mockedTicket));
-        jest.spyOn(mockedTicketService, 'invalidTickets').mockReturnValue(Promise.resolve());
+        jest.spyOn(mockedTicketService, 'createTicket').mockReturnValue(Promise.resolve(ok(mockedTicket)));
+                jest.spyOn(mockedTicketService, 'invalidTickets').mockReturnValue(Promise.resolve());
     });
 
     afterEach(() => {
