@@ -24,7 +24,7 @@ describe('End-2-End Testing', () => {
         const moduleFixture: TestingModule = await Test.createTestingModule({
             imports: [
                 ConfigModule.forRoot({
-                    envFilePath: ['test/.env.test'],
+                    envFilePath: ['test/.env.e2e'],
                 }),
                 MongooseModule.forRoot(uri),
                 CryptoModule,
