@@ -88,6 +88,7 @@ export class TicketsService {
                     hashedPassportId: ticketToCreate.hashedPassportId,
                 })
                 .countDocuments();
+            console.debug(numberOfTicketsValidTo);
             if (numberOfTicketsValidEnd > 0 || numberOfTicketsValidTo > 0) {
                 return Promise.resolve(err(new TicketCreationFailure(TicketCreationFailureReason.ConflictInTime)));
             }
