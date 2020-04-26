@@ -3,7 +3,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { ObjectId } from 'mongodb';
 import { Model } from 'mongoose';
 import { err, ok, Result } from 'neverthrow';
-import { TicketModel } from './tickets.schema';
+import { TicketModel, TICKET_MODEL_NAME } from './tickets.schema';
 
 /**
  * Enumeration of reason why ticket creation failed.
@@ -55,13 +55,14 @@ export interface TicketRequest extends Identity {
 export interface Ticket extends TicketRequest {
     ticketId: string;
     ticketStatus: TicketStatus;
+    verificationCode: string;
 }
 /**
  * Service for handling all tickets agnostic to any external access point e.g.: controller, scheduler etc.
  */
 @Injectable()
 export class TicketsService {
-    constructor(@InjectModel('Tickets') private ticketModel: Model<TicketModel>) {}
+    constructor(@InjectModel(TICKET_MODEL_NAME) private ticketModel: Model<TicketModel>) {}
 
     /**
      *Creates a new ticket by given request.
