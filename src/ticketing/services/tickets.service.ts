@@ -42,10 +42,6 @@ export interface Identity {
     hashedPassportId: string;
 }
 
-export interface ITicketID {
-    ticketID: string;
-}
-
 export interface TicketRequest extends Identity {
     reason: string;
 
