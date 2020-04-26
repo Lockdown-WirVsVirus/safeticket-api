@@ -73,6 +73,7 @@ describe('End-2-End Testing', () => {
                 .expect(201)
                 .then(res => {
                     expect(res.body.hashedPassportId).toBe(hashedPassportId);
+                    expect(res.body.verificationCode).toMatch(/\w\w\d+/); // 2x char, rest numbers
                 });
         });
 
