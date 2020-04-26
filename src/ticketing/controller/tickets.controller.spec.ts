@@ -47,6 +47,7 @@ describe('TicketsController', () => {
             ticketStatus: 'CREATED',
             validFromDateTime: new Date(),
             validToDateTime: new Date(),
+            verificationCode: 'AG' + 10_001,
         };
         jest.spyOn(mockedTicketService, 'createTicket').mockReturnValue(Promise.resolve(ok(mockedTicket)));
     });
@@ -81,7 +82,7 @@ describe('TicketsController', () => {
             const mockedTicketResponse: Ticket = {
                 ticketStatus: 'CREATED',
                 ticketId: 'unique-ticket-id',
-                verificationCode: 'AG10000',
+                verificationCode: 'AG' + 10_001,
                 hashedPassportId: await hashingService.hashPassportId(ticketRequest.passportId),
                 ...ticketRequest,
             };
@@ -96,6 +97,7 @@ describe('TicketsController', () => {
             expect(createdTicket.hashedPassportId).toBeTruthy();
             expect(createdTicket.ticketStatus).toBe('CREATED');
             expect(createdTicket.hashedPassportId).toBe('d436d26ec52f1ce918196f0a105e9b443acf8ec926bd5b6826a6b934c6360a51');
+            expect(createdTicket.verificationCode).toBe('AG10001');
         });
     });
 });
