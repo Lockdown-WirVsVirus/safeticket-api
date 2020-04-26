@@ -132,12 +132,9 @@ describe('End-2-End Testing', () => {
                 .send(partyTicket)
                 .expect(201)
                 .then(async creationResponse => {
-                    const createdTicket = creationResponse.body;
-                    await request(app.getHttpServer())
-                        .delete('/api/v1/tickets/' + createdTicket.id)
-                        .send({
-                            ticketID: createdTicket.id,
-                        })
+                    const createdTicket = creationResponse.body
+                                        await request(app.getHttpServer())
+                        .delete('/api/v1/tickets/' + createdTicket.ticketId)
                         .expect(200);
                 });
         },

@@ -1,8 +1,29 @@
-import { Injectable, Logger, HttpException, HttpStatus } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { ObjectId } from 'mongodb';
 import { Model } from 'mongoose';
+import { err, ok, Result } from 'neverthrow';
 import { TicketModel } from './tickets.schema';
+
+/**
+ * Enumeration of reason why ticket creation failed.
+ */
+export enum TicketCreationFailureReason {
+    /**
+     * There exists a same ticket for the same time.
+     */
+    ConflictInTime,
+    /**
+     * Undefined technical error.
+     */
+    InternalError,
+}
+/**
+ * Custom failure holder  for reason why ticket creation has been aborted or declined.
+ */
+export class TicketCreationFailure {
+    constructor(public readonly reason: TicketCreationFailureReason, public readonly error?: Error) {}
+}
 
 export interface TicketID {
     searchTicketId: string;
@@ -40,41 +61,48 @@ export interface Ticket extends TicketRequest {
     ticketId: string;
     ticketStatus: TicketStatus;
 }
-
+/**
+ * Service for handling all tickets agnostic to any external access point e.g.: controller, scheduler etc.
+ */
 @Injectable()
 export class TicketsService {
-    private readonly logger = new Logger(TicketsService.name);
-
     constructor(@InjectModel('Tickets') private ticketModel: Model<TicketModel>) {}
 
     /**
      *Creates a new ticket by given request.
      * @param ticketToCreate the new ticket to create.
      */
-    async createTicket(ticketToCreate: TicketRequest): Promise<Ticket> {
-        let numberOfTicketsValidTo = await this.ticketModel
-            .find({
-                validToDateTime: {
-                    $gte: ticketToCreate.validFromDateTime,
-                    $lte: ticketToCreate.validToDateTime,
-                },
-                hashedPassportId: ticketToCreate.hashedPassportId,
-            })
-            .count();
+    async createTicket(ticketToCreate: TicketRequest): Promise<Result<Ticket, TicketCreationFailure>> {
+        try {
+            let numberOfTicketsValidTo = await this.ticketModel
+                .find({
+                    validToDateTime: {
+                        $gte: ticketToCreate.validFromDateTime,
+                        $lte: ticketToCreate.validToDateTime,
+                    },
+                    hashedPassportId: ticketToCreate.hashedPassportId,
+                })
+                .countDocuments();
 
-        let numberOfTicketsValidEnd = await this.ticketModel
-            .find({
-                validFromDateTime: {
-                    $gte: ticketToCreate.validFromDateTime,
-                    $lte: ticketToCreate.validToDateTime,
-                },
-                hashedPassportId: ticketToCreate.hashedPassportId,
-            })
-            .count();
-        if (numberOfTicketsValidEnd > 0 || numberOfTicketsValidTo > 0) {
-            throw new HttpException('Ticket exist', HttpStatus.CONFLICT);
+            let numberOfTicketsValidEnd = await this.ticketModel
+                .find({
+                    validFromDateTime: {
+                        $gte: ticketToCreate.validFromDateTime,
+                        $lte: ticketToCreate.validToDateTime,
+                    },
+                    hashedPassportId: ticketToCreate.hashedPassportId,
+                })
+                .countDocuments();
+            if (numberOfTicketsValidEnd > 0 || numberOfTicketsValidTo > 0) {
+                return Promise.resolve(err(new TicketCreationFailure(TicketCreationFailureReason.ConflictInTime)));
+            }
+
+            const savedTicket: Ticket = await new this.ticketModel(ticketToCreate).save();
+            return Promise.resolve(ok(savedTicket));
+        } catch (e) {
+            //catch every thing and return them
+            return Promise.reject(err(new TicketCreationFailure(TicketCreationFailureReason.InternalError, e)));
         }
-        return new this.ticketModel(ticketToCreate).save();
     }
 
     /**
