@@ -81,6 +81,7 @@ export class TicketsController {
             reason: ticket.reason,
             startAddress: ticket.startAddress,
             endAddress: ticket.endAddress,
+            verificationCode: ticket.verificationCode,
         };
     }
 }

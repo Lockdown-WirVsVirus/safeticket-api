@@ -81,6 +81,7 @@ describe('TicketsController', () => {
             const mockedTicketResponse: Ticket = {
                 ticketStatus: 'CREATED',
                 ticketId: 'unique-ticket-id',
+                verificationCode: 'AG10000',
                 hashedPassportId: await hashingService.hashPassportId(ticketRequest.passportId),
                 ...ticketRequest,
             };

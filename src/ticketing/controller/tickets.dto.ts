@@ -102,4 +102,8 @@ export class TicketResponseDto implements Ticket {
     @ApiProperty({ readOnly: true })
     @IsNotEmpty()
     ticketStatus: TicketStatus;
+
+    @ApiProperty({ readOnly: true })
+    @IsNotEmpty()
+    verificationCode: string;
 }
