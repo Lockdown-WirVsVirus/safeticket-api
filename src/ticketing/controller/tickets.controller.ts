@@ -87,7 +87,8 @@ export class TicketsController {
         };
     }
 
-    @Cron('* * 0 * * *')
+    // at 00:00 every day
+    @Cron('0 0 * * *')
     async invalidTickets(): Promise<void> {
         this.ticketsService.invalidTickets();
     }
