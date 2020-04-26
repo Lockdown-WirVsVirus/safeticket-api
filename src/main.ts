@@ -28,6 +28,9 @@ async function bootstrap() {
         .addTag('ticket')
         .build();
     const document = SwaggerModule.createDocument(app, options);
+
+    // doc will be published under HOST:PORT/api-doc
+    // json will be published under HOST:PORT/api-doc-json
     SwaggerModule.setup('api-doc', app, document);
     await app.listen(port);
     console.log('server started at port ' + port);
