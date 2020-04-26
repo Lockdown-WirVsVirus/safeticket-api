@@ -89,6 +89,8 @@ export class TicketsController {
 
     // at 00:00 every day
     @Cron('0 0 * * *')
+    @HttpCode(204)
+    @Delete()
     async invalidTickets(): Promise<void> {
         this.ticketsService.invalidTickets();
     }

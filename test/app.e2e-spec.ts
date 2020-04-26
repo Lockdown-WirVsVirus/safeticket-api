@@ -8,6 +8,7 @@ import { CryptoModule } from '../src/crypto/crypto.module';
 import * as request from 'supertest';
 import { AuthModule } from '../src/auth/auth.module';
 import { TicketingModule } from '../src/ticketing/ticketing.module';
+import { async } from 'rxjs/internal/scheduler/async';
 
 describe('End-2-End Testing', () => {
     let app: INestApplication;
@@ -132,11 +133,40 @@ describe('End-2-End Testing', () => {
                 .send(partyTicket)
                 .expect(201)
                 .then(async creationResponse => {
-                    const createdTicket = creationResponse.body
-                                        await request(app.getHttpServer())
+                    const createdTicket = creationResponse.body;
+                    await request(app.getHttpServer())
                         .delete('/api/v1/tickets/' + createdTicket.ticketId)
                         .expect(204);
                 });
+        },
+        timeout,
+    );
+
+    it(
+        'invalid ticket',
+        async () => {
+            await request(app.getHttpServer())
+                .post('/api/v1/tickets')
+                .send(partyTicket)
+                .expect(201)
+                .then(async creationResponse => {
+                    await request(app.getHttpServer())
+                    .delete('/api/v1/tickets/')
+                    .expect(204);
+                    const createdTicket = creationResponse.body;
+                    
+                    await request(app.getHttpServer())
+                    .get('/api/v1/tickets/' + creationResponse.body.ticketId)
+                    .send()
+                    .expect(200).then(ticket => {
+                        const t = ticket.body;
+                        console.debug(t)
+                        expect(t.status).toBe("EXPIRED");
+
+                    });
+                    
+
+                 });
         },
         timeout,
     );

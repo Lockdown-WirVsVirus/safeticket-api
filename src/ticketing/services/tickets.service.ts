@@ -120,24 +120,24 @@ export class TicketsService {
 
     // set all tickets where validToDateTime is in past to status Expired
     async invalidTickets(): Promise<void> {
-        this.ticketModel.updateMany(
+    console.debug("test")
+      await  this.ticketModel.update(
             {
                 validToDateTime: {
                     $lte: new Date(),
                 },
-                ticketStatus: 'CREATED',
+                status: 'CREATED',
             },
-            { ticketStatus: 'EXPIRED' },
+            { status: 'EXPIRED' },
         );
     }
 
     async invalidTicketByID(ticketId: string): Promise<Boolean> {
-        console.debug(ticketId);
         let doc = await this.ticketModel.update(
             {
                 _id: new ObjectId(ticketId),
             },
-            { ticketStatus: 'EXPIRED' },
+            { status: 'EXPIRED' },
             { new: true },
         );
         return doc.status === 'EXPIRED';
