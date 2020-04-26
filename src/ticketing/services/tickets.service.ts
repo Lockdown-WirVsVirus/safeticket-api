@@ -25,10 +25,6 @@ export class TicketCreationFailure {
     constructor(public readonly reason: TicketCreationFailureReason, public readonly error?: Error) {}
 }
 
-export interface TicketID {
-    searchTicketId: string;
-}
-
 export interface Address {
     street: string;
     houseNumber: string;
