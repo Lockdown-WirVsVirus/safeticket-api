@@ -118,6 +118,7 @@ export class TicketsService {
         return foundTicket;
     }
 
+    // set all tickets where validToDateTime is in past to status Expired
     async invalidTickets(): Promise<void> {
         this.ticketModel.updateMany(
             {

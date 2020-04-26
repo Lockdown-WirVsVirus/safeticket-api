@@ -135,7 +135,7 @@ describe('End-2-End Testing', () => {
                     const createdTicket = creationResponse.body
                                         await request(app.getHttpServer())
                         .delete('/api/v1/tickets/' + createdTicket.ticketId)
-                        .expect(200);
+                        .expect(204);
                 });
         },
         timeout,
