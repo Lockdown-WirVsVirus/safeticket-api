@@ -181,17 +181,6 @@ describe('End-2-End Testing', () => {
         timeout,
     );
 
-    it(
-        'can not create Ticket because validToDate is in the past',
-        async () => {
-            partyTicket.validToDateTime = new Date('2019-01-16').toISOString();
-            return await request(app.getHttpServer())
-                .post('/api/v1/tickets')
-                .send(partyTicket)
-                .expect(400);
-        },
-        timeout,
-    );
 
     describe('Auth', () => {
         it(
