@@ -89,7 +89,7 @@ export class TicketsService {
                 }
             })
             .catch(e => {
-                this.logger.warn('failed to init auto increment counter for ' + AUTO_INC_VERIFICATION_CODE + ' with error: ', e);
+                this.logger.error('failed to init auto increment counter for ' + AUTO_INC_VERIFICATION_CODE + ' with error: ', e);
             });
     }
 
