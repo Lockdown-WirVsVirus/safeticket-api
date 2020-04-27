@@ -4,6 +4,8 @@ import { ObjectId } from 'mongodb';
 import { Model } from 'mongoose';
 import { err, ok, Result } from 'neverthrow';
 import { TicketModel } from './tickets.schema';
+import { Cron } from '@nestjs/schedule';
+
 
 /**
  * Enumeration of reason why ticket creation failed.
@@ -118,9 +120,11 @@ export class TicketsService {
         return foundTicket;
     }
 
+    
+    // at 00:00 every day
+    @Cron('0 0 0 * * *')
     // set all tickets where validToDateTime is in past to status Expired
     async invalidTickets(): Promise<void> {
-    console.debug("test")
       await  this.ticketModel.update(
             {
                 validToDateTime: {

@@ -4,7 +4,6 @@ import { HashingService } from '../../crypto/services/hashing.service';
 import { TicketsService, TicketCreationFailureReason, Ticket, TicketCreationFailure } from '../services/tickets.service';
 import { IdentityDto, TicketRequestDto, TicketResponseDto } from './tickets.dto';
 import { Result } from 'neverthrow';
-import { Cron } from '@nestjs/schedule';
 
 @ApiTags('ticket')
 @Controller('api/v1/tickets')
@@ -85,14 +84,6 @@ export class TicketsController {
             endAddress: ticket.endAddress,
             status: ticket.status,
         };
-    }
-
-    // at 00:00 every day
-    @Cron('0 0 * * *')
-    @HttpCode(204)
-    @Delete()
-    async invalidTickets(): Promise<void> {
-        this.ticketsService.invalidTickets();
     }
 
     @HttpCode(204)
