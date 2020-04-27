@@ -50,7 +50,7 @@ describe('TicketsController', () => {
             validToDateTime: new Date(),
         };
         jest.spyOn(mockedTicketService, 'createTicket').mockReturnValue(Promise.resolve(ok(mockedTicket)));
-                jest.spyOn(mockedTicketService, 'invalidTickets').mockReturnValue(Promise.resolve());
+        jest.spyOn(mockedTicketService, 'invalidTickets').mockReturnValue(Promise.resolve());
     });
 
     afterEach(() => {
@@ -103,7 +103,7 @@ describe('TicketsController', () => {
 
     describe('invalid Ticket', () => {
         it('invalid a ticket in db', async () => {
-            await sut.invalidTickets();
+            await mockedTicketService.invalidTickets();
         });
     });
 });
