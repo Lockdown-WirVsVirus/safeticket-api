@@ -44,8 +44,8 @@ describe('End-2-End Testing', () => {
     }, timeout);
 
     const hashedPassportId: string = 'df6c420ab8b18fba7230cf495638f3400132f896817f52d8bf0c717730340ce7';
-    let validFromDateTime = new Date();
-    validFromDateTime.setHours(validFromDateTime.getHours() + 1);
+    let dateInFuture = new Date();
+    dateInFuture.setHours(dateInFuture.getHours() + 1);
 
     const partyTicket = {
         passportId: 'LXXXXXXX',
@@ -66,7 +66,7 @@ describe('End-2-End Testing', () => {
         },
 
         validFromDateTime: new Date().toISOString(),
-        validToDateTime: validFromDateTime.toISOString(),
+        validToDateTime: dateInFuture.toISOString(),
     };
 
     describe('Ticketing', () => {
@@ -180,7 +180,6 @@ describe('End-2-End Testing', () => {
         },
         timeout,
     );
-
 
     describe('Auth', () => {
         it(

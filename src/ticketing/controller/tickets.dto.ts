@@ -2,7 +2,6 @@ import { ApiProperty } from '@nestjs/swagger';
 import { Length, IsNotEmpty, MinLength, IsDateString, IsDate, MinDate } from 'class-validator';
 import { Address, Identity, Ticket, TicketStatus } from '../services/tickets.service';
 import { Type } from 'class-transformer';
-import { async } from 'rxjs/internal/scheduler/async';
 
 export class AddressDto implements Address {
     @ApiProperty()
