@@ -69,26 +69,26 @@ export class TicketsService {
      */
     async createTicket(ticketToCreate: TicketRequest): Promise<Result<Ticket, TicketCreationFailure>> {
         try {
-            let numberOfTicketsValidTo = await this.ticketModel
+            let numberOfTicketsInDB = await this.ticketModel
                 .find({
-                    validToDateTime: {
-                        $gte: ticketToCreate.validFromDateTime,
-                        $lte: ticketToCreate.validToDateTime,
-                    },
+                    $or: [
+                        {
+                            validToDateTime: {
+                                $gte: ticketToCreate.validFromDateTime,
+                                $lte: ticketToCreate.validToDateTime,
+                            },
+                            validFromDateTime: {
+                                $gte: ticketToCreate.validFromDateTime,
+                                $lte: ticketToCreate.validToDateTime,
+                            },
+                        },
+                    ],
                     hashedPassportId: ticketToCreate.hashedPassportId,
                 })
                 .countDocuments();
 
-            let numberOfTicketsValidEnd = await this.ticketModel
-                .find({
-                    validFromDateTime: {
-                        $gte: ticketToCreate.validFromDateTime,
-                        $lte: ticketToCreate.validToDateTime,
-                    },
-                    hashedPassportId: ticketToCreate.hashedPassportId,
-                })
-                .countDocuments();
-            if (numberOfTicketsValidEnd > 0 || numberOfTicketsValidTo > 0) {
+            console.debug(numberOfTicketsInDB);
+            if (numberOfTicketsInDB > 0) {
                 return Promise.resolve(err(new TicketCreationFailure(TicketCreationFailureReason.ConflictInTime)));
             }
 
