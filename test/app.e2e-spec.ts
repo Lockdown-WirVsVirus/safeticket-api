@@ -13,7 +13,7 @@ describe('End-2-End Testing', () => {
     let app: INestApplication;
     let mongoDB: MongoMemoryServer;
 
-    const timeout: number = 60_000;
+    const timeout: number = 120_000;
 
     beforeEach(async () => {
         mongoDB = new MongoMemoryServer();
