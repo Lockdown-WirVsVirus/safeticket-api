@@ -19,8 +19,6 @@ describe('End-2-End Testing', () => {
         mongoDB = new MongoMemoryServer();
         const uri = await mongoDB.getUri();
 
-        console.log('** start in memory mongodb: ', await mongoDB.getDbName());
-
         const moduleFixture: TestingModule = await Test.createTestingModule({
             imports: [
                 ConfigModule.forRoot({
@@ -38,8 +36,14 @@ describe('End-2-End Testing', () => {
         await app.init();
     }, timeout);
 
+    // After each: stop mongodb
     afterEach(async () => {
         await mongoDB.stop();
+        // will be restarted clean in BeforeEach
+    }, timeout);
+
+    // At the end: close app
+    afterAll(async () => {
         await app.close();
     }, timeout);
 
