@@ -4,16 +4,16 @@ import { JwtService } from '@nestjs/jwt';
 import { MongooseModule } from '@nestjs/mongoose';
 import { Test, TestingModule } from '@nestjs/testing';
 import { MongoMemoryServer } from 'mongodb-memory-server';
-import { CryptoModule } from '../src/crypto/crypto.module';
 import * as request from 'supertest';
 import { AuthModule } from '../src/auth/auth.module';
+import { CryptoModule } from '../src/crypto/crypto.module';
 import { TicketingModule } from '../src/ticketing/ticketing.module';
 
 describe('End-2-End Testing', () => {
     let app: INestApplication;
     let mongoDB: MongoMemoryServer;
 
-    const timeout: number = 5_000;
+    const timeout: number = 60_000;
 
     beforeEach(async () => {
         mongoDB = new MongoMemoryServer();
