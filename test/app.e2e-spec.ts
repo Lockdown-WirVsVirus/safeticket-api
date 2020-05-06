@@ -75,7 +75,7 @@ describe('End-2-End Testing', () => {
 
     describe('Ticketing', () => {
         it('should create and get ticket', async () => {
-            await request(app.getHttpServer())
+            return await request(app.getHttpServer())
                 .post('/api/v1/tickets')
                 .send(partyTicket)
                 .expect(201)
@@ -87,13 +87,13 @@ describe('End-2-End Testing', () => {
         it(
             'search created ticket',
             async () => {
-                await request(app.getHttpServer())
+                return await request(app.getHttpServer())
                     .post('/api/v1/tickets')
                     .send(partyTicket)
                     .expect(201)
                     .then(async creationResponse => {
                         const createdTicket = creationResponse.body;
-                        await request(app.getHttpServer())
+                        return await request(app.getHttpServer())
                             .get('/api/v1/tickets/' + creationResponse.body.ticketId)
                             .send()
                             .expect(200)
@@ -109,13 +109,13 @@ describe('End-2-End Testing', () => {
         it(
             'search all created tickets by identity',
             async () => {
-                await request(app.getHttpServer())
+                return await request(app.getHttpServer())
                     .post('/api/v1/tickets')
                     .send(partyTicket)
                     .expect(201)
                     .then(async creationResponse => {
                         const createdTicket = creationResponse.body;
-                        await request(app.getHttpServer())
+                        return await request(app.getHttpServer())
                             .post('/api/v1/tickets/for/identity')
                             .send({
                                 hashedPassportId: createdTicket.hashedPassportId,
@@ -140,7 +140,7 @@ describe('End-2-End Testing', () => {
                 .send(partyTicket)
                 .expect(201)
                 .then(async createError => {
-                    await request(app.getHttpServer())
+                    return await request(app.getHttpServer())
                         .post('/api/v1/tickets')
                         .send(partyTicket)
                         .expect(409);
@@ -189,7 +189,7 @@ describe('End-2-End Testing', () => {
         it(
             'should create jwt and use it',
             async () => {
-                await request(app.getHttpServer())
+                return await request(app.getHttpServer())
                     .post('/api/v1/auth/token')
                     .send({
                         passportId: 'LXXXXX',
