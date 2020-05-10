@@ -5,16 +5,15 @@ import { Model } from 'mongoose';
 import { TicketModel } from './tickets.schema';
 import PDFDocument = require('pdfkit');
 import getStream = require('get-stream');
+import { base64StringToBlob } from 'blob-util'
 
 export interface TicketID {
     searchTicketId: string;
 }
 
 export interface PDFID {
-    pdif: string;
     firstname: string;
     lastname: string;
-    passportID: string;
     ticketID: string;
 }
 
@@ -104,37 +103,34 @@ export class TicketsService {
     }
 
     async generateTicketPDF(pdfrequest: PDFID): Promise<String> {
-        let ticket = await this.ticketModel.find({
-            id: new ObjectId(pdfrequest.ticketID),
+        let ticket = await this.ticketModel.findOne({
+            _id: new ObjectId(pdfrequest.ticketID),
         });
-        const pdf = async (pdfrequest, ticket) => {
+        
             const doc = new PDFDocument();
             doc.text('Ticket#', 100, 100);
-            doc.text('Ticketid', 150, 100);
-            doc.text('qr hier', 100, 200);
+            doc.text(ticket.ticketId, 150, 100);
 
-            doc.text('Begründung', 100, 400);
-            doc.text('Reason', 200, 400);
+            doc.text('Begründung', 100, 200);
+            doc.text(ticket.reason, 200, 200);
 
-            doc.text('Gültig von', 100, 450);
-            doc.text('Datum', 200, 450);
+            doc.text('Gültig von', 100, 250);
+            doc.text(ticket.validFromDateTime.toISOString(), 200, 450);
 
-            doc.text('Gültig bis', 100, 500);
-            doc.text('Datum', 200, 500);
+            doc.text('Gültig bis', 100, 300);
+            doc.text(ticket.validToDateTime.toISOString(), 200, 500);
 
-            doc.text('Gültig für', 100, 550);
-            doc.text('Max Musterman', 200, 550);
+            doc.text('Gültig für', 100, 350);
+            doc.text(pdfrequest.firstname +" " +  pdfrequest.lastname, 200, 550);
 
-            doc.text('Start-Addresse', 100, 600);
-            doc.text('Hauptstraße', 200, 600);
+            doc.text('Start-Addresse', 100, 400);
+            doc.text(ticket.startAddress.street +" " + ticket.startAddress.houseNumber + " " +  ticket.startAddress.zipCode, 200, 600);
 
-            doc.text('Start-Addresse', 100, 650);
-            doc.text('Hauptstraße', 200, 650);
+            doc.text('Start-Addresse', 100, 450);
+            doc.text(ticket.endAddress.street + " " +  ticket.endAddress.houseNumber+ " " +  ticket.endAddress.zipCode, 200, 650);
             doc.end();
-            return await getStream.buffer(doc);
-        };
+         return (await getStream.buffer(doc)).toString("base64");
+    
 
-        const pdfBuffer = await pdf(pdfrequest, ticket);
-        return pdfBuffer.toString('base64');
     }
 }

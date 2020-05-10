@@ -6,13 +6,9 @@ import { Address, Identity, Ticket, TicketsService, TicketStatus, TicketID, PDFI
 
 export class PDFRequestDTO implements PDFID {
     @IsNotEmpty()
-    pdif: string;
-    @IsNotEmpty()
     firstname: string;
     @IsNotEmpty()
     lastname: string;
-    @IsNotEmpty()
-    passportID: string;
     @IsNotEmpty()
     ticketID: string;
 }

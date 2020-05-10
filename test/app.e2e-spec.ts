@@ -8,6 +8,7 @@ import { CryptoModule } from '../src/crypto/crypto.module';
 import * as request from 'supertest';
 import { AuthModule } from '../src/auth/auth.module';
 import { TicketingModule } from '../src/ticketing/ticketing.module';
+import { Type } from 'class-transformer';
 
 describe('End-2-End Testing', () => {
     let app: INestApplication;
@@ -104,6 +105,26 @@ describe('End-2-End Testing', () => {
                 await request(app.getHttpServer())
                     .post('/api/v1/tickets/generatePDF')
                     .expect(400);
+            },
+            timeout,
+        );
+
+        it(
+            'generate PDF by Ticket id',
+            async () => {
+                await request(app.getHttpServer())
+                    .post('/api/v1/tickets')
+                    .send(partyTicket)
+                    .expect(201)
+                    .then(async creationResponse => {
+                        const pdfrqeust = {"lastname":"Karl", "firstname":"K", "ticketID": creationResponse.body.ticketId}
+                        await request(app.getHttpServer())
+                        .post('/api/v1/tickets/generatePDF')
+                        .send(pdfrqeust)
+                        .expect(200).then(async pdfResponse => {
+                            expect(pdfResponse.text).toContain("JVBERi0xLjMKJf////8KNyAwIG9iago8PAovVHlw")
+                        })
+                    });
             },
             timeout,
         );
