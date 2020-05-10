@@ -142,19 +142,19 @@ export class TicketsService {
         doc.text(ticket.reason, 200, 200);
 
         doc.text('Gültig von', 100, 250);
-        doc.text(ticket.validFromDateTime.toISOString(), 200, 450);
+        doc.text(ticket.validFromDateTime.toISOString(), 200, 250);
 
         doc.text('Gültig bis', 100, 300);
         doc.text(ticket.validToDateTime.toISOString(), 200, 500);
 
         doc.text('Gültig für', 100, 350);
-        doc.text(pdfrequest.firstname + ' ' + pdfrequest.lastname, 200, 550);
+        doc.text(pdfrequest.firstname + ' ' + pdfrequest.lastname, 200, 350);
 
         doc.text('Start-Addresse', 100, 400);
-        doc.text(ticket.startAddress.street + ' ' + ticket.startAddress.houseNumber + ' ' + ticket.startAddress.zipCode, 200, 600);
+        doc.text(ticket.startAddress.street + ' ' + ticket.startAddress.houseNumber + ' ' + ticket.startAddress.zipCode, 200, 400);
 
         doc.text('Start-Addresse', 100, 450);
-        doc.text(ticket.endAddress.street + ' ' + ticket.endAddress.houseNumber + ' ' + ticket.endAddress.zipCode, 200, 650);
+        doc.text(ticket.endAddress.street + ' ' + ticket.endAddress.houseNumber + ' ' + ticket.endAddress.zipCode, 200, 450);
         doc.end();
 
         return await getStream.buffer(doc);
