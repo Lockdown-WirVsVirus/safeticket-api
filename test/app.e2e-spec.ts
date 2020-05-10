@@ -131,7 +131,8 @@ describe('End-2-End Testing', () => {
                             .send(pdfrqeust)
                             .expect(200)
                             .then(async pdfResponse => {
-                                expect(pdfResponse.text).toContain('JVBERi0xLjMKJf////8KNyAwIG9iago8PAovVHlw');
+                                expect(pdfResponse.get('Content-Type')).toBe('application/pdf');
+                                expect(pdfResponse.get('Content-Disposition')).toContain('attachment');
                             });
                     });
             },
