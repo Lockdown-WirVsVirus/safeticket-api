@@ -95,8 +95,7 @@ describe('End-2-End Testing', () => {
                             });
                     });
             },
-            timeout,
-        );
+                    );
 
         it(
             'search all created tickets by identity',
@@ -120,7 +119,7 @@ describe('End-2-End Testing', () => {
                             });
                     });
             },
-            timeout,
+            
         );
     });
 
@@ -138,7 +137,7 @@ describe('End-2-End Testing', () => {
                         .expect(409);
                 });
         },
-        timeout,
+        
     );
 
     it(
@@ -150,7 +149,7 @@ describe('End-2-End Testing', () => {
                 .send(partyTicket)
                 .expect(400);
         },
-        timeout,
+        
     );
 
     it(
@@ -197,7 +196,7 @@ describe('End-2-End Testing', () => {
                             });
                     });
             },
-            timeout,
+            
         );
     });
 });
