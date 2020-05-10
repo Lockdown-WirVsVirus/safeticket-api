@@ -4,20 +4,22 @@ import { JwtService } from '@nestjs/jwt';
 import { MongooseModule } from '@nestjs/mongoose';
 import { Test, TestingModule } from '@nestjs/testing';
 import { MongoMemoryServer } from 'mongodb-memory-server';
+import { CryptoModule } from '../src/crypto/crypto.module';
 import * as request from 'supertest';
 import { AuthModule } from '../src/auth/auth.module';
-import { CryptoModule } from '../src/crypto/crypto.module';
 import { TicketingModule } from '../src/ticketing/ticketing.module';
 
 describe('End-2-End Testing', () => {
     let app: INestApplication;
     let mongoDB: MongoMemoryServer;
 
-    const timeout: number = 120_000;
+    const timeout: number = 5_000;
 
     beforeEach(async () => {
         mongoDB = new MongoMemoryServer();
         const uri = await mongoDB.getUri();
+
+        console.log('** start in memory mongodb: ', await mongoDB.getDbName());
 
         const moduleFixture: TestingModule = await Test.createTestingModule({
             imports: [
@@ -36,21 +38,12 @@ describe('End-2-End Testing', () => {
         await app.init();
     }, timeout);
 
-    // After each: stop mongodb
     afterEach(async () => {
         await mongoDB.stop();
-        // will be restarted clean in BeforeEach
-    }, timeout);
-
-    // At the end: close app
-    afterAll(async () => {
         await app.close();
     }, timeout);
 
     const hashedPassportId: string = 'df6c420ab8b18fba7230cf495638f3400132f896817f52d8bf0c717730340ce7';
-    let dateInFuture = new Date();
-    dateInFuture.setHours(dateInFuture.getHours() + 1);
-
     const partyTicket = {
         passportId: 'LXXXXXXX',
         reason: 'Party',
@@ -68,9 +61,8 @@ describe('End-2-End Testing', () => {
             city: 'Stadt',
             country: 'Germany',
         },
-
-        validFromDateTime: new Date().toISOString(),
-        validToDateTime: dateInFuture.toISOString(),
+        validFromDateTime: '2020-04-01T08:00:00.000Z',
+        validToDateTime: '2020-04-01T10:00:00.000Z',
     };
 
     describe('Ticketing', () => {
@@ -103,7 +95,8 @@ describe('End-2-End Testing', () => {
                             });
                     });
             },
-                    );
+            timeout,
+        );
 
         it(
             'search all created tickets by identity',
@@ -127,7 +120,7 @@ describe('End-2-End Testing', () => {
                             });
                     });
             },
-            
+            timeout,
         );
     });
 
@@ -145,7 +138,7 @@ describe('End-2-End Testing', () => {
                         .expect(409);
                 });
         },
-        
+        timeout,
     );
 
     it(
@@ -157,25 +150,13 @@ describe('End-2-End Testing', () => {
                 .send(partyTicket)
                 .expect(400);
         },
-        
+        timeout,
     );
 
     it(
         'can not create Ticket because id is wrong',
         async () => {
             partyTicket.passportId = '';
-            return await request(app.getHttpServer())
-                .post('/api/v1/tickets')
-                .send(partyTicket)
-                .expect(400);
-        },
-        timeout,
-    );
-
-    it(
-        'can not create Ticket because validFromDate is in the past',
-        async () => {
-            partyTicket.validFromDateTime = new Date('2019-01-16').toISOString();
             return await request(app.getHttpServer())
                 .post('/api/v1/tickets')
                 .send(partyTicket)
@@ -216,7 +197,7 @@ describe('End-2-End Testing', () => {
                             });
                     });
             },
-            
+            timeout,
         );
     });
 });
