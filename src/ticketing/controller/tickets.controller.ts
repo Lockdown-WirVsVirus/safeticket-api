@@ -1,10 +1,10 @@
-import { Body, Controller, Get, HttpCode, HttpException, HttpStatus, Param, Post, Logger } from '@nestjs/common';
+import { Body, Controller, Get, HttpCode, HttpException, HttpStatus, Param, Post, Logger, Header, Res } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { HashingService } from '../../crypto/services/hashing.service';
 import { TicketsService, TicketCreationFailureReason, Ticket, TicketCreationFailure } from '../services/tickets.service';
 import { IdentityDto, TicketRequestDto, TicketResponseDto, PDFRequestDTO } from './tickets.dto';
 import { Result } from 'neverthrow';
-
+import { Readable } from 'stream';
 
 @ApiTags('ticket')
 @Controller('api/v1/tickets')
@@ -68,9 +68,17 @@ export class TicketsController {
     }
 
     @HttpCode(200)
-    @Post('/generatePDF')
-    async generatePDF(@Body() pdfid: PDFRequestDTO): Promise<String> {
-        return await this.ticketsService.generateTicketPDF(pdfid);
+    @Header('Content-Type', 'application/pdf')
+    // @Header('Content-Disposition', 'attachment; filename=test.pdf')
+    @Header('Content-Disposition', 'attachment')
+    @Post('/pdf')
+    async generatePDF(@Body() pdfid: PDFRequestDTO, @Res() response) {
+        const buffer = await this.ticketsService.generateTicketPDF(pdfid);
+
+        const stream = new Readable();
+        stream.push(buffer);
+        stream.push(null);
+        stream.pipe(response);
     }
 
     /**

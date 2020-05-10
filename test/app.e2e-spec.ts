@@ -111,7 +111,7 @@ describe('End-2-End Testing', () => {
             'generate pdf but request is wrong',
             async () => {
                 await request(app.getHttpServer())
-                    .post('/api/v1/tickets/generatePDF')
+                    .post('/api/v1/tickets/pdf')
                     .expect(400);
             },
             timeout,
@@ -125,13 +125,14 @@ describe('End-2-End Testing', () => {
                     .send(partyTicket)
                     .expect(201)
                     .then(async creationResponse => {
-                        const pdfrqeust = {"lastname":"Karl", "firstname":"K", "ticketID": creationResponse.body.ticketId}
+                        const pdfrqeust = { lastname: 'Karl', firstname: 'K', ticketID: creationResponse.body.ticketId };
                         await request(app.getHttpServer())
-                        .post('/api/v1/tickets/generatePDF')
-                        .send(pdfrqeust)
-                        .expect(200).then(async pdfResponse => {
-                            expect(pdfResponse.text).toContain("JVBERi0xLjMKJf////8KNyAwIG9iago8PAovVHlw")
-                        })
+                            .post('/api/v1/tickets/pdf')
+                            .send(pdfrqeust)
+                            .expect(200)
+                            .then(async pdfResponse => {
+                                expect(pdfResponse.text).toContain('JVBERi0xLjMKJf////8KNyAwIG9iago8PAovVHlw');
+                            });
                     });
             },
             timeout,
