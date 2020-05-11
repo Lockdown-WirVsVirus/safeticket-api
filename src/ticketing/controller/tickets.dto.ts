@@ -1,15 +1,17 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { Length, IsNotEmpty, MinLength, IsDateString, IsDate, MinDate } from 'class-validator';
+import { Length, IsNotEmpty, MinLength, IsDateString, IsDate, MinDate, IsMongoId } from 'class-validator';
 import { Address, Identity, Ticket, TicketStatus, PDFID } from '../services/tickets.service';
 import { Type } from 'class-transformer';
 
 export class PDFRequestDTO implements PDFID {
-    @IsNotEmpty()
-    @IsNotEmpty()
     firstname: string;
-    @IsNotEmpty()
-    ticketID: string;
     lastname: string;
+}
+
+export class TicketRequestID{
+    @IsNotEmpty()
+    @IsMongoId()
+    ticketId: string;
 }
 
 export class AddressDto implements Address {

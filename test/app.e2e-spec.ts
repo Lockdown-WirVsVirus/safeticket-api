@@ -111,7 +111,8 @@ describe('End-2-End Testing', () => {
             'generate pdf but request is wrong',
             async () => {
                 await request(app.getHttpServer())
-                    .post('/api/v1/tickets/pdf')
+                    .post('/api/v1/tickets/1234/pdf')
+                    .send()
                     .expect(400);
             },
             timeout,
@@ -127,8 +128,8 @@ describe('End-2-End Testing', () => {
                     .then(async creationResponse => {
                         const pdfrqeust = { lastname: 'Karl', firstname: 'K', ticketID: creationResponse.body.ticketId };
                         await request(app.getHttpServer())
-                            .post('/api/v1/tickets/pdf')
-                            .send(pdfrqeust)
+                            .post('/api/v1/tickets/' + creationResponse.body.ticketId + "/pdf")
+                            .send()
                             .expect(200)
                             .then(async pdfResponse => {
                                 expect(pdfResponse.get('Content-Type')).toBe('application/pdf');

@@ -34,7 +34,6 @@ export interface TicketID {
 export interface PDFID {
     firstname: string;
     lastname: string;
-    ticketID: string;
 }
 
 export interface Address {
@@ -129,9 +128,10 @@ export class TicketsService {
         return foundTicket;
     }
 
-    async generateTicketPDF(pdfrequest: PDFID): Promise<Buffer> {
+    async generateTicketPDF(ticketID: string, pdfrequest: PDFID): Promise<Buffer> {
+        console.log(ticketID)
         let ticket = await this.ticketModel.findOne({
-            _id: new ObjectId(pdfrequest.ticketID),
+            _id: new ObjectId(ticketID),
         });
 
         const doc = new PDFDocument();
@@ -147,9 +147,11 @@ export class TicketsService {
         doc.text('Gültig bis', 100, 300);
         doc.text(ticket.validToDateTime.toISOString(), 200, 500);
 
-        doc.text('Gültig für', 100, 350);
-        doc.text(pdfrequest.firstname + ' ' + pdfrequest.lastname, 200, 350);
-
+        if (pdfrequest.firstname && pdfrequest.lastname){
+            doc.text('Gültig für', 100, 350);
+            doc.text(pdfrequest.firstname + ' ' + pdfrequest.lastname, 200, 350);    
+        }
+       
         doc.text('Start-Addresse', 100, 400);
         doc.text(ticket.startAddress.street + ' ' + ticket.startAddress.houseNumber + ' ' + ticket.startAddress.zipCode, 200, 400);
 
