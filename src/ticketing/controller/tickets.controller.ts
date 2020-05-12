@@ -1,9 +1,10 @@
-import { Body, Controller, Get, HttpCode, HttpException, HttpStatus, Param, Post, Logger } from '@nestjs/common';
+import { Body, Controller, Get, HttpCode, HttpException, HttpStatus, Param, Post, Logger, Header, Res, Query } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { HashingService } from '../../crypto/services/hashing.service';
-import { TicketsService, TicketCreationFailureReason, Ticket, TicketCreationFailure } from '../services/tickets.service';
-import { IdentityDto, TicketRequestDto, TicketResponseDto } from './tickets.dto';
+import { TicketsService, TicketCreationFailureReason, Ticket, TicketCreationFailure, TicketID } from '../services/tickets.service';
+import { IdentityDto, TicketRequestDto, TicketResponseDto, PDFRequestDTO, TicketRequestID } from './tickets.dto';
 import { Result } from 'neverthrow';
+import { Readable } from 'stream';
 
 @ApiTags('ticket')
 @Controller('api/v1/tickets')
@@ -43,8 +44,8 @@ export class TicketsController {
     }
 
     @Get(':ticketId')
-    async getTicket(@Param('ticketId') ticketId: string): Promise<TicketResponseDto> {
-        const foundTicket: TicketResponseDto = await this.ticketsService.findTicket(ticketId);
+    async getTicket(@Param() ticketId: TicketRequestID): Promise<TicketResponseDto> {
+        const foundTicket: TicketResponseDto = await this.ticketsService.findTicket(ticketId.ticketId);
 
         if (!foundTicket) {
             throw new HttpException('Ticket not Found', HttpStatus.NOT_FOUND);
@@ -64,6 +65,20 @@ export class TicketsController {
         }
 
         return ticketsOfIdentity.map(ticket => this.mapToDto(ticket));
+    }
+
+    @HttpCode(200)
+    @Header('Content-Type', 'application/pdf')
+    // @Header('Content-Disposition', 'attachment; filename=test.pdf')
+    @Header('Content-Disposition', 'attachment')
+    @Post(':ticketId/pdf')
+    async generatePDF(@Param() ticketId:TicketRequestID, @Res() response, @Body() name?: PDFRequestDTO) {
+        const buffer = await this.ticketsService.generateTicketPDF(ticketId.ticketId, name);
+
+        const stream = new Readable();
+        stream.push(buffer);
+        stream.push(null);
+        stream.pipe(response);
     }
 
     /**

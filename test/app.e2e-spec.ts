@@ -8,6 +8,7 @@ import * as request from 'supertest';
 import { AuthModule } from '../src/auth/auth.module';
 import { CryptoModule } from '../src/crypto/crypto.module';
 import { TicketingModule } from '../src/ticketing/ticketing.module';
+import { Type } from 'class-transformer';
 
 describe('End-2-End Testing', () => {
     let app: INestApplication;
@@ -100,6 +101,39 @@ describe('End-2-End Testing', () => {
                             .expect(searchTicketResponse => {
                                 const sameTicketLikeCreated = searchTicketResponse.body;
                                 expect(sameTicketLikeCreated).toMatchObject(createdTicket);
+                            });
+                    });
+            },
+            timeout,
+        );
+
+        it(
+            'generate pdf but request is wrong',
+            async () => {
+                await request(app.getHttpServer())
+                    .post('/api/v1/tickets/1234/pdf')
+                    .send()
+                    .expect(400);
+            },
+            timeout,
+        );
+
+        it(
+            'generate PDF by Ticket id',
+            async () => {
+                await request(app.getHttpServer())
+                    .post('/api/v1/tickets')
+                    .send(partyTicket)
+                    .expect(201)
+                    .then(async creationResponse => {
+                        const pdfrqeust = { lastname: 'Karl', firstname: 'K', ticketID: creationResponse.body.ticketId };
+                        await request(app.getHttpServer())
+                            .post('/api/v1/tickets/' + creationResponse.body.ticketId + "/pdf")
+                            .send()
+                            .expect(200)
+                            .then(async pdfResponse => {
+                                expect(pdfResponse.get('Content-Type')).toBe('application/pdf');
+                                expect(pdfResponse.get('Content-Disposition')).toContain('attachment');
                             });
                     });
             },
