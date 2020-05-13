@@ -11,7 +11,13 @@ import { TicketingModule } from './ticketing/ticketing.module';
             // if a variable is found in multiple files, the first one takes precedence.
             envFilePath: ['.env.local', '.env'],
         }),
-        MongooseModule.forRoot(process.env.MONGODB_URI),
+        MongooseModule.forRoot(process.env.MONGODB_URI, {
+            // feature toggles to get rid of deprecation warnings.
+            useNewUrlParser: true,
+            useUnifiedTopology: true,
+            useFindAndModify: false,
+            useCreateIndex: true,
+        }),
         CryptoModule,
         TicketingModule,
         AuthModule,
