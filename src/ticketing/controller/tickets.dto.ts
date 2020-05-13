@@ -8,7 +8,7 @@ export class PDFRequestDTO implements PDFID {
     lastname: string;
 }
 
-export class TicketRequestID{
+export class TicketRequestID {
     @IsNotEmpty()
     @IsMongoId()
     ticketId: string;

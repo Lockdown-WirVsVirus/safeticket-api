@@ -94,7 +94,7 @@ describe('TicketsController', () => {
             expect(createdTicket.ticketId).toBeTruthy();
             expect(createdTicket.hashedPassportId).toBeTruthy();
             expect(createdTicket.ticketStatus).toBe('CREATED');
-            expect(createdTicket.hashedPassportId).toBe('6493f4ecc943cfdb31bc5b71f909cfa2f1f206d91618125b0f0d1eddb3a77d43');
+            expect(createdTicket.hashedPassportId).toBe('d436d26ec52f1ce918196f0a105e9b443acf8ec926bd5b6826a6b934c6360a51');
         });
     });
 });

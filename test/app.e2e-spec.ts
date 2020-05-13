@@ -128,7 +128,7 @@ describe('End-2-End Testing', () => {
                     .then(async creationResponse => {
                         const pdfrqeust = { lastname: 'Karl', firstname: 'K', ticketID: creationResponse.body.ticketId };
                         await request(app.getHttpServer())
-                            .post('/api/v1/tickets/' + creationResponse.body.ticketId + "/pdf")
+                            .post('/api/v1/tickets/' + creationResponse.body.ticketId + '/pdf')
                             .send()
                             .expect(200)
                             .then(async pdfResponse => {

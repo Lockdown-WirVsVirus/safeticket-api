@@ -3,7 +3,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { ObjectId } from 'mongodb';
 import { Model } from 'mongoose';
 import { err, ok, Result } from 'neverthrow';
-import { TicketModel } from './tickets.schema';
+import { TicketModel, TICKET_MODEL_NAME } from './tickets.schema';
 import PDFDocument = require('pdfkit');
 import getStream = require('get-stream');
 
@@ -68,7 +68,7 @@ export interface Ticket extends TicketRequest {
  */
 @Injectable()
 export class TicketsService {
-    constructor(@InjectModel('Tickets') private ticketModel: Model<TicketModel>) {}
+    constructor(@InjectModel(TICKET_MODEL_NAME) private ticketModel: Model<TicketModel>) {}
 
     /**
      *Creates a new ticket by given request.
@@ -129,7 +129,6 @@ export class TicketsService {
     }
 
     async generateTicketPDF(ticketID: string, pdfrequest: PDFID): Promise<Buffer> {
-        console.log(ticketID)
         let ticket = await this.ticketModel.findOne({
             _id: new ObjectId(ticketID),
         });
@@ -147,11 +146,11 @@ export class TicketsService {
         doc.text('Gültig bis', 100, 300);
         doc.text(ticket.validToDateTime.toISOString(), 200, 500);
 
-        if (pdfrequest.firstname && pdfrequest.lastname){
+        if (pdfrequest.firstname && pdfrequest.lastname) {
             doc.text('Gültig für', 100, 350);
-            doc.text(pdfrequest.firstname + ' ' + pdfrequest.lastname, 200, 350);    
+            doc.text(pdfrequest.firstname + ' ' + pdfrequest.lastname, 200, 350);
         }
-       
+
         doc.text('Start-Addresse', 100, 400);
         doc.text(ticket.startAddress.street + ' ' + ticket.startAddress.houseNumber + ' ' + ticket.startAddress.zipCode, 200, 400);
 

@@ -72,7 +72,7 @@ export class TicketsController {
     // @Header('Content-Disposition', 'attachment; filename=test.pdf')
     @Header('Content-Disposition', 'attachment')
     @Post(':ticketId/pdf')
-    async generatePDF(@Param() ticketId:TicketRequestID, @Res() response, @Body() name?: PDFRequestDTO) {
+    async generatePDF(@Param() ticketId: TicketRequestID, @Res() response, @Body() name?: PDFRequestDTO) {
         const buffer = await this.ticketsService.generateTicketPDF(ticketId.ticketId, name);
 
         const stream = new Readable();
