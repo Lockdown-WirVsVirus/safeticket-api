@@ -82,6 +82,7 @@ describe('End-2-End Testing', () => {
                 .expect(201)
                 .then(res => {
                     expect(res.body.hashedPassportId).toBe(hashedPassportId);
+                    expect(res.body.verificationCode).toMatch(/[0123456789abcdefghjklmnpqrstuvwxyz]{9}/);
                 });
         });
 
@@ -196,7 +197,7 @@ describe('End-2-End Testing', () => {
     );
 
     it(
-        'can not create Ticket because id is wrong',
+        'can not create Ticket because passportId is wrong',
         async () => {
             partyTicket.passportId = '';
             return await request(app.getHttpServer())
