@@ -89,6 +89,7 @@ export class TicketsController {
     private mapToDto(ticket: Ticket): TicketResponseDto {
         return {
             ticketId: ticket.ticketId,
+            verificationCode: ticket.verificationCode,
             ticketStatus: ticket.ticketStatus,
             validFromDateTime: ticket.validFromDateTime,
             validToDateTime: ticket.validToDateTime,

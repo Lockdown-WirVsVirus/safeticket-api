@@ -6,6 +6,7 @@ import { err, ok, Result } from 'neverthrow';
 import { TicketModel, TICKET_MODEL_NAME } from './tickets.schema';
 import PDFDocument = require('pdfkit');
 import getStream = require('get-stream');
+import { ShortidService } from './shortid.service';
 
 /**
  * Enumeration of reason why ticket creation failed.
@@ -62,13 +63,14 @@ export interface TicketRequest extends Identity {
 export interface Ticket extends TicketRequest {
     ticketId: string;
     ticketStatus: TicketStatus;
+    verificationCode: string;
 }
 /**
  * Service for handling all tickets agnostic to any external access point e.g.: controller, scheduler etc.
  */
 @Injectable()
 export class TicketsService {
-    constructor(@InjectModel(TICKET_MODEL_NAME) private ticketModel: Model<TicketModel>) {}
+    constructor(@InjectModel(TICKET_MODEL_NAME) private ticketModel: Model<TicketModel>, private readonly shortidService: ShortidService) {}
 
     /**
      *Creates a new ticket by given request.
@@ -94,12 +96,17 @@ export class TicketsService {
                 })
                 .countDocuments();
 
-            console.debug(numberOfTicketsInDB);
             if (numberOfTicketsInDB > 0) {
                 return Promise.resolve(err(new TicketCreationFailure(TicketCreationFailureReason.ConflictInTime)));
             }
 
-            const savedTicket: Ticket = await new this.ticketModel(ticketToCreate).save();
+            // enhance ticket object by verificationCode
+            const enhancedTicket = {
+                verificationCode: this.shortidService.generateShortId(),
+                ...ticketToCreate,
+            };
+
+            const savedTicket: Ticket = await new this.ticketModel(enhancedTicket).save();
             return Promise.resolve(ok(savedTicket));
         } catch (e) {
             //catch every thing and return them
