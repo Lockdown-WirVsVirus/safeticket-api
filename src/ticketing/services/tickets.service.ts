@@ -62,7 +62,6 @@ export interface TicketRequest extends Identity {
 export interface Ticket extends TicketRequest {
     ticketId: string;
     ticketStatus: TicketStatus;
-    verificationCode: string;
 }
 /**
  * Service for handling all tickets agnostic to any external access point e.g.: controller, scheduler etc.
@@ -130,7 +129,6 @@ export class TicketsService {
     }
 
     async generateTicketPDF(ticketID: string, pdfrequest: PDFID): Promise<Buffer> {
-        console.log(ticketID);
         let ticket = await this.ticketModel.findOne({
             _id: new ObjectId(ticketID),
         });
