@@ -1,4 +1,4 @@
-import { LogLevel, ValidationPipe } from '@nestjs/common';
+import { LogLevel, ValidationPipe, Logger } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { AppModule } from './app.module';
@@ -33,6 +33,8 @@ async function bootstrap() {
     // json will be published under HOST:PORT/api-doc-json
     SwaggerModule.setup('api-doc', app, document);
     await app.listen(port);
-    console.log('server started at port ' + port);
+
+    const logger = new Logger('NestApplication');
+    logger.log('server started at port ' + port);
 }
 bootstrap();
