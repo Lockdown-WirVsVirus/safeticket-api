@@ -1,6 +1,18 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { Length, IsNotEmpty, MinLength, IsDateString, isNotEmpty, IsDataURI, isDateString } from 'class-validator';
-import { Address, Identity, Ticket, TicketStatus } from '../services/tickets.service';
+import { Length, IsNotEmpty, MinLength, IsDateString, IsDate, MinDate, IsMongoId } from 'class-validator';
+import { Address, Identity, Ticket, TicketStatus, PDFID } from '../services/tickets.service';
+import { Type } from 'class-transformer';
+
+export class PDFRequestDTO implements PDFID {
+    firstname: string;
+    lastname: string;
+}
+
+export class TicketRequestID {
+    @IsNotEmpty()
+    @IsMongoId()
+    ticketId: string;
+}
 
 export class AddressDto implements Address {
     @ApiProperty()
@@ -44,11 +56,15 @@ export class TicketRequestDto {
     endAddress: AddressDto;
 
     @ApiProperty({ description: 'The date where you want to the ticket to become active.' })
-    @IsDateString()
+    @Type(() => Date)
+    @IsDate()
+    @MinDate(new Date())
     validFromDateTime: Date;
 
     @ApiProperty({ description: 'The date where you want to activate the ticket.' })
-    @IsDateString()
+    @Type(() => Date)
+    @IsDate()
+    @MinDate(new Date())
     validToDateTime: Date;
 }
 

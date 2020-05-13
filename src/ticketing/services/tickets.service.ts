@@ -4,6 +4,8 @@ import { ObjectId } from 'mongodb';
 import { Model } from 'mongoose';
 import { err, ok, Result } from 'neverthrow';
 import { TicketModel, TICKET_MODEL_NAME } from './tickets.schema';
+import PDFDocument = require('pdfkit');
+import getStream = require('get-stream');
 
 /**
  * Enumeration of reason why ticket creation failed.
@@ -27,6 +29,11 @@ export class TicketCreationFailure {
 
 export interface TicketID {
     searchTicketId: string;
+}
+
+export interface PDFID {
+    firstname: string;
+    lastname: string;
 }
 
 export interface Address {
@@ -70,26 +77,26 @@ export class TicketsService {
      */
     async createTicket(ticketToCreate: TicketRequest): Promise<Result<Ticket, TicketCreationFailure>> {
         try {
-            let numberOfTicketsValidTo = await this.ticketModel
+            let numberOfTicketsInDB = await this.ticketModel
                 .find({
-                    validToDateTime: {
-                        $gte: ticketToCreate.validFromDateTime,
-                        $lte: ticketToCreate.validToDateTime,
-                    },
+                    $or: [
+                        {
+                            validToDateTime: {
+                                $gte: ticketToCreate.validFromDateTime,
+                                $lte: ticketToCreate.validToDateTime,
+                            },
+                            validFromDateTime: {
+                                $gte: ticketToCreate.validFromDateTime,
+                                $lte: ticketToCreate.validToDateTime,
+                            },
+                        },
+                    ],
                     hashedPassportId: ticketToCreate.hashedPassportId,
                 })
                 .countDocuments();
 
-            let numberOfTicketsValidEnd = await this.ticketModel
-                .find({
-                    validFromDateTime: {
-                        $gte: ticketToCreate.validFromDateTime,
-                        $lte: ticketToCreate.validToDateTime,
-                    },
-                    hashedPassportId: ticketToCreate.hashedPassportId,
-                })
-                .countDocuments();
-            if (numberOfTicketsValidEnd > 0 || numberOfTicketsValidTo > 0) {
+            console.debug(numberOfTicketsInDB);
+            if (numberOfTicketsInDB > 0) {
                 return Promise.resolve(err(new TicketCreationFailure(TicketCreationFailureReason.ConflictInTime)));
             }
 
@@ -120,5 +127,39 @@ export class TicketsService {
         });
 
         return foundTicket;
+    }
+
+    async generateTicketPDF(ticketID: string, pdfrequest: PDFID): Promise<Buffer> {
+        console.log(ticketID);
+        let ticket = await this.ticketModel.findOne({
+            _id: new ObjectId(ticketID),
+        });
+
+        const doc = new PDFDocument();
+        doc.text('Ticket#', 100, 100);
+        doc.text(ticket.ticketId, 150, 100);
+
+        doc.text('Begründung', 100, 200);
+        doc.text(ticket.reason, 200, 200);
+
+        doc.text('Gültig von', 100, 250);
+        doc.text(ticket.validFromDateTime.toISOString(), 200, 250);
+
+        doc.text('Gültig bis', 100, 300);
+        doc.text(ticket.validToDateTime.toISOString(), 200, 500);
+
+        if (pdfrequest.firstname && pdfrequest.lastname) {
+            doc.text('Gültig für', 100, 350);
+            doc.text(pdfrequest.firstname + ' ' + pdfrequest.lastname, 200, 350);
+        }
+
+        doc.text('Start-Addresse', 100, 400);
+        doc.text(ticket.startAddress.street + ' ' + ticket.startAddress.houseNumber + ' ' + ticket.startAddress.zipCode, 200, 400);
+
+        doc.text('Start-Addresse', 100, 450);
+        doc.text(ticket.endAddress.street + ' ' + ticket.endAddress.houseNumber + ' ' + ticket.endAddress.zipCode, 200, 450);
+        doc.end();
+
+        return await getStream.buffer(doc);
     }
 }
