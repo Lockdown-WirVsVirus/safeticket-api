@@ -9,6 +9,8 @@ export const ticketSchema = new mongoose.Schema(
     {
         hashedPassportId: String,
 
+        verificationCode: { type: String, unique: true },
+
         reason: String,
 
         startAddress: {

@@ -95,6 +95,15 @@ export class TicketResponseDto implements Ticket {
     })
     hashedPassportId: string;
 
+    @ApiProperty({
+        readOnly: true,
+        minLength: 9,
+        maxLength: 9,
+        example: 'c29a07f78',
+        description: 'shortcode for verification',
+    })
+    verificationCode: string;
+
     @ApiProperty()
     @IsNotEmpty()
     reason: string;
