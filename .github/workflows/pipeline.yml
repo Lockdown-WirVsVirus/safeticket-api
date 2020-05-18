@@ -29,8 +29,10 @@ jobs:
 
   # Dockerize and deploy
   # needs build-test
+  # only for branches develop + master
   docker-build-and-push:
     needs: build-test
+    if: github.ref == 'refs/heads/develop' || github.ref == 'refs/heads/master'
     name: Docker Build and Publish
     runs-on: ubuntu-latest
     steps:
@@ -73,12 +75,12 @@ jobs:
         echo "::set-env name=CLOUD_RUN_NAME::${{ secrets.GCLOUD_APP_NAME }}"
 
     # Deploy image to Cloud Run
-    # - name: Deploy
-    #   run: |-
-    #     echo "deploy to cloud run $CLOUD_RUN_NAME" && \
-    #     gcloud run deploy "$CLOUD_RUN_NAME" \
-    #       --quiet \
-    #       --region "europe-west1" \
-    #       --image eu.gcr.io/${{ secrets.GCLOUD_PROJECT }}/${{ secrets.GCLOUD_APP_NAME }}:${GITHUB_SHA} \
-    #       --platform "managed" \
-    #       --allow-unauthenticated
+    - name: Deploy
+      run: |-
+        echo "deploy to cloud run $CLOUD_RUN_NAME" && \
+        gcloud run deploy "$CLOUD_RUN_NAME" \
+          --quiet \
+          --region "europe-west1" \
+          --image eu.gcr.io/${{ secrets.GCLOUD_PROJECT }}/${{ secrets.GCLOUD_APP_NAME }}:${GITHUB_SHA} \
+          --platform "managed" \
+          --allow-unauthenticated
