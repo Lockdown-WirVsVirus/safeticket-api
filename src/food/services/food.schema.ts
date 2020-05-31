@@ -1,5 +1,5 @@
 import * as mongoose from 'mongoose';
-import { Meal } from './food.service';
+import { Meal} from './food.service';
 
 export const Meal_MODEL_NAME = 'Meal';
 

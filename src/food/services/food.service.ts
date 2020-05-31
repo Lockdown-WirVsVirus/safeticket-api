@@ -1,23 +1,24 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { ObjectId } from 'mongodb';
 import { Model } from 'mongoose';
-import { err, ok} from 'neverthrow';
+import { err, ok, Result } from 'neverthrow';
 import { Meal_MODEL_NAME, MealModul } from './food.schema';
 import { TicketModel } from './../../ticketing/services/tickets.schema';
 import { TicketCreationFailure, TicketCreationFailureReason } from './../../ticketing/services/tickets.service';
 
-export type meal = 'Breakfeat' | 'Lunch' | 'supper';
-
 export class Meal {
-    type: meal;
     ticketid: string;
     numberOfPersons: number;
     time: Date;
 }
 
 export class MealRequest {
-    type: meal;
+    ticketid: string;
+    numberOfPersons: number;
+    time: Date;
+}
+
+export interface IMeal extends Meal {
     ticketid: string;
     numberOfPersons: number;
     time: Date;
@@ -27,7 +28,7 @@ export class MealRequest {
 export class FoodService {
     constructor(@InjectModel(Meal_MODEL_NAME) private mealModul: Model<MealModul>, private ticketModul: Model<TicketModel>) {}
 
-    async requestFood(meal: MealRequest) {
+    async requestFood(meal: MealRequest): Promise<Result<Meal, TicketCreationFailure>> {
         try {
             let numberOfTickets = await this.ticketModul
                 .find({
@@ -36,7 +37,7 @@ export class FoodService {
                 .count();
 
             if (numberOfTickets < 0) {
-                return Promise.resolve(err('No Tickets in System'));
+                return Promise.resolve(err(new TicketCreationFailure(TicketCreationFailureReason.ConflictInTime)));
             }
             const savedMeal = await new this.mealModul(meal).save();
             return Promise.resolve(ok(savedMeal));
