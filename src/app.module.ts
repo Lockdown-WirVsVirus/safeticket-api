@@ -12,7 +12,13 @@ import { ScheduleModule } from '@nestjs/schedule';
             // if a variable is found in multiple files, the first one takes precedence.
             envFilePath: ['.env.local', '.env'],
         }),
-        MongooseModule.forRoot(process.env.MONGODB_URI),
+        MongooseModule.forRoot(process.env.MONGODB_URI, {
+            // feature toggles to get rid of deprecation warnings.
+            useNewUrlParser: true,
+            useUnifiedTopology: true,
+            useFindAndModify: false,
+            useCreateIndex: true,
+        }),
         ScheduleModule.forRoot(),
         CryptoModule,
         TicketingModule,
