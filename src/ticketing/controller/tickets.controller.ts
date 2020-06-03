@@ -1,4 +1,4 @@
-import { Body, Controller, Get, HttpCode, HttpException, HttpStatus, Param, Post, Logger, Header, Res, Query } from '@nestjs/common';
+import { Body, Controller, Get, HttpCode, HttpException, HttpStatus, Param, Post, Logger, Header, Res, Query, Delete } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { HashingService } from '../../crypto/services/hashing.service';
 import { TicketsService, TicketCreationFailureReason, Ticket, TicketCreationFailure, TicketID } from '../services/tickets.service';
