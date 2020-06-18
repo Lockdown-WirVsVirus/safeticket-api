@@ -4,6 +4,7 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { AuthModule } from './auth/auth.module';
 import { CryptoModule } from './crypto/crypto.module';
 import { TicketingModule } from './ticketing/ticketing.module';
+import { ScheduleModule } from '@nestjs/schedule';
 
 @Module({
     imports: [
@@ -18,6 +19,7 @@ import { TicketingModule } from './ticketing/ticketing.module';
             useFindAndModify: false,
             useCreateIndex: true,
         }),
+        ScheduleModule.forRoot(),
         CryptoModule,
         TicketingModule,
         AuthModule,
