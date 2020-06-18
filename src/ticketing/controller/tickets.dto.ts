@@ -82,6 +82,8 @@ export class IdentityDto implements Identity {
 }
 
 export class TicketResponseDto implements Ticket {
+    @IsNotEmpty()
+    status: TicketStatus;
     @ApiProperty({ readOnly: true })
     ticketId: string;
 

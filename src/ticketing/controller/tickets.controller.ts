@@ -1,4 +1,18 @@
-import { Body, Controller, Get, HttpCode, HttpException, HttpStatus, Param, Post, Logger, Header, Res, Query } from '@nestjs/common';
+import {
+    Body,
+    Controller,
+    Get,
+    HttpCode,
+    HttpException,
+    HttpStatus,
+    Param,
+    Post,
+    Logger,
+    Header,
+    Res,
+    Query,
+    Delete,
+} from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { HashingService } from '../../crypto/services/hashing.service';
 import { TicketsService, TicketCreationFailureReason, Ticket, TicketCreationFailure, TicketID } from '../services/tickets.service';
@@ -22,6 +36,7 @@ export class TicketsController {
             endAddress: ticketDto.endAddress,
             validFromDateTime: ticketDto.validFromDateTime,
             validToDateTime: ticketDto.validToDateTime,
+            status: 'CREATED',
         });
 
         //wrap result handling into promise
@@ -97,6 +112,19 @@ export class TicketsController {
             reason: ticket.reason,
             startAddress: ticket.startAddress,
             endAddress: ticket.endAddress,
+            status: ticket.status,
         };
+    }
+
+    @HttpCode(204)
+    @Delete(':ticketID')
+    async invalidTicketById(@Param('ticketID') ticketID: string): Promise<Boolean> {
+        return this.ticketsService.invalidTicketByID(ticketID);
+    }
+
+    @HttpCode(204)
+    @Delete()
+    async invalidAllTicket(): Promise<void> {
+        return this.ticketsService.invalidTickets();
     }
 }
