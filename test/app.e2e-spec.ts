@@ -8,7 +8,7 @@ import * as request from 'supertest';
 import { AuthModule } from '../src/auth/auth.module';
 import { CryptoModule } from '../src/crypto/crypto.module';
 import { TicketingModule } from '../src/ticketing/ticketing.module';
-import { Type } from 'class-transformer';
+import MockDate from 'mockdate';
 
 describe('End-2-End Testing', () => {
     let app: INestApplication;
@@ -166,6 +166,51 @@ describe('End-2-End Testing', () => {
             timeout,
         );
     });
+
+    it(
+        'invalid ticket by id',
+        async () => {
+            await request(app.getHttpServer())
+                .post('/api/v1/tickets')
+                .send(partyTicket)
+                .expect(201)
+                .then(async creationResponse => {
+                    const createdTicket = creationResponse.body;
+                    await request(app.getHttpServer())
+                        .delete('/api/v1/tickets/' + createdTicket.ticketId)
+                        .expect(204);
+                });
+        },
+        timeout,
+    );
+
+    it(
+        'invalid ticket',
+
+        async () => {
+            const tomorrow = new Date();
+            tomorrow.setDate(tomorrow.getDate() + 1);
+            await request(app.getHttpServer())
+                .post('/api/v1/tickets')
+                .send(partyTicket)
+                .expect(201)
+                .then(async creationResponse => {
+                    MockDate.set('2200-11-22'); // jump to the futur, so the new ticket is invalid
+                    await request(app.getHttpServer())
+                        .delete('/api/v1/tickets/')
+                        .expect(204);
+                    await request(app.getHttpServer())
+                        .get('/api/v1/tickets/' + creationResponse.body.ticketId)
+                        .send()
+                        .expect(200)
+                        .then(ticket => {
+                            const t = ticket.body;
+                            expect(t.status).toBe('EXPIRED');
+                        });
+                });
+        },
+        timeout,
+    );
 
     it(
         'can not create Ticket because ticket exist',

@@ -30,6 +30,7 @@ describe('TicketsController', () => {
             ticketId: 'testing',
             verificationCode: '123456abc',
             reason: 'simulation',
+            status: 'CREATED',
             startAddress: {
                 street: '',
                 houseNumber: '',
@@ -50,6 +51,7 @@ describe('TicketsController', () => {
             validToDateTime: new Date(),
         };
         jest.spyOn(mockedTicketService, 'createTicket').mockReturnValue(Promise.resolve(ok(mockedTicket)));
+        jest.spyOn(mockedTicketService, 'invalidTickets').mockReturnValue(Promise.resolve());
     });
 
     afterEach(() => {
@@ -83,6 +85,7 @@ describe('TicketsController', () => {
                 ticketStatus: 'CREATED',
                 ticketId: 'unique-ticket-id',
                 verificationCode: '123456abc',
+                status: 'CREATED',
                 hashedPassportId: await hashingService.hashPassportId(ticketRequest.passportId),
                 ...ticketRequest,
             };
@@ -97,6 +100,12 @@ describe('TicketsController', () => {
             expect(createdTicket.hashedPassportId).toBeTruthy();
             expect(createdTicket.ticketStatus).toBe('CREATED');
             expect(createdTicket.hashedPassportId).toBe('d436d26ec52f1ce918196f0a105e9b443acf8ec926bd5b6826a6b934c6360a51');
+        });
+    });
+
+    describe('invalid Ticket', () => {
+        it('invalid a ticket in db', async () => {
+            await mockedTicketService.invalidTickets();
         });
     });
 });
