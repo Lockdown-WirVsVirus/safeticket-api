@@ -7,6 +7,8 @@ import { TicketModel, TICKET_MODEL_NAME } from './tickets.schema';
 import PDFDocument = require('pdfkit');
 import getStream = require('get-stream');
 import { ShortidService } from './shortid.service';
+import { Cron } from '@nestjs/schedule';
+
 
 /**
  * Enumeration of reason why ticket creation failed.
@@ -58,6 +60,7 @@ export interface TicketRequest extends Identity {
 
     validFromDateTime: Date;
     validToDateTime: Date;
+    status: TicketStatus;
 }
 
 export interface Ticket extends TicketRequest {
@@ -166,5 +169,32 @@ export class TicketsService {
         doc.end();
 
         return await getStream.buffer(doc);
+    }
+
+    
+    // at 00:00 every day
+    @Cron('0 0 0 * * *')
+    // set all tickets where validToDateTime is in past to status Expired
+    async invalidTickets(): Promise<void> {
+      await  this.ticketModel.update(
+            {
+                validToDateTime: {
+                    $lte: new Date(),
+                },
+                status: 'CREATED',
+            },
+            { status: 'EXPIRED' },
+        );
+    }
+
+    async invalidTicketByID(ticketId: string): Promise<Boolean> {
+        let doc = await this.ticketModel.update(
+            {
+                _id: new ObjectId(ticketId),
+            },
+            { status: 'EXPIRED' },
+            { new: true },
+        );
+        return doc.status === 'EXPIRED';
     }
 }
