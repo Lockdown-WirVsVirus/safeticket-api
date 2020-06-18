@@ -8,6 +8,7 @@ export interface TicketModel extends Ticket, mongoose.Document {}
 export const ticketSchema = new mongoose.Schema(
     {
         hashedPassportId: String,
+        status: String,
 
         verificationCode: { type: String, unique: true },
 
