@@ -43,7 +43,7 @@
         "mongoose": "^5.9.16",
         "mongodb": "^3.5.7",
         "nanoid": "^3.1.7",
-        "neverthrow": "^2.3.2",
+        "neverthrow": "^2.3.4",
         "passport": "^0.4.1",
         "passport-jwt": "^4.0.0",
         "passport-local": "^1.0.0",
