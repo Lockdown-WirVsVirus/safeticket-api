@@ -9,6 +9,7 @@ import { AuthModule } from '../src/auth/auth.module';
 import { CryptoModule } from '../src/crypto/crypto.module';
 import { TicketingModule } from '../src/ticketing/ticketing.module';
 import MockDate from 'mockdate';
+import * as moment from 'moment';
 
 describe('End-2-End Testing', () => {
     let app: INestApplication;
@@ -72,6 +73,30 @@ describe('End-2-End Testing', () => {
 
         validFromDateTime: new Date().toISOString(),
         validToDateTime: dateInFuture.toISOString(),
+    };
+
+    const createTimeTicket = (dateFrom: Date, dateTo: Date) => {
+        return {
+            passportId: 'LXXXXXXX',
+            reason: 'Party',
+            startAddress: {
+                street: 'Straße',
+                houseNumber: '1',
+                zipCode: '01234',
+                city: 'Stadt',
+                country: 'Germany',
+            },
+            endAddress: {
+                street: 'Straße',
+                houseNumber: '1',
+                zipCode: '01234',
+                city: 'Stadt',
+                country: 'Germany',
+            },
+
+            validFromDateTime: dateFrom.toISOString(),
+            validToDateTime: dateTo.toISOString(),
+        };
     };
 
     describe('Ticketing', () => {
@@ -165,105 +190,160 @@ describe('End-2-End Testing', () => {
             },
             timeout,
         );
+
+        it(
+            'invalid ticket by id',
+            async () => {
+                await request(app.getHttpServer())
+                    .post('/api/v1/tickets')
+                    .send(partyTicket)
+                    .expect(201)
+                    .then(async creationResponse => {
+                        const createdTicket = creationResponse.body;
+                        await request(app.getHttpServer())
+                            .delete('/api/v1/tickets/' + createdTicket.ticketId)
+                            .expect(204);
+                    });
+            },
+            timeout,
+        );
+
+        it(
+            'invalid ticket',
+
+            async () => {
+                const tomorrow = new Date();
+                tomorrow.setDate(tomorrow.getDate() + 1);
+                await request(app.getHttpServer())
+                    .post('/api/v1/tickets')
+                    .send(partyTicket)
+                    .expect(201)
+                    .then(async creationResponse => {
+                        MockDate.set('2200-11-22'); // jump to the futur, so the new ticket is invalid
+                        await request(app.getHttpServer())
+                            .delete('/api/v1/tickets/')
+                            .expect(204);
+                        await request(app.getHttpServer())
+                            .get('/api/v1/tickets/' + creationResponse.body.ticketId)
+                            .send()
+                            .expect(200)
+                            .then(ticket => {
+                                const t = ticket.body;
+                                expect(t.status).toBe('EXPIRED');
+                            });
+                    });
+            },
+            timeout,
+        );
+
+        it(
+            'can not create Ticket because ticket time conflicts',
+            async () => {
+                // first datetime
+                const from1 = moment()
+                    .add(1, 'day')
+                    .hours(13)
+                    .minutes(0);
+                const to1 = moment()
+                    .add(1, 'day')
+                    .hours(16)
+                    .minutes(0);
+                // 2nd datetime overlapping from
+                const from2 = moment()
+                    .add(1, 'day')
+                    .hours(14)
+                    .minutes(0);
+                const to2 = moment()
+                    .add(1, 'day')
+                    .hours(17)
+                    .minutes(0);
+                // 3rd datetime overlapping to
+                const from3 = moment()
+                    .add(1, 'day')
+                    .hours(12)
+                    .minutes(30);
+                const to3 = moment()
+                    .add(1, 'day')
+                    .hours(13)
+                    .minutes(30);
+                // 4th datetime inside first
+                const from4 = moment()
+                    .add(1, 'day')
+                    .hours(13)
+                    .minutes(30);
+                const to4 = moment()
+                    .add(1, 'day')
+                    .hours(14)
+                    .minutes(30);
+
+                const firstTicket = createTimeTicket(from1.toDate(), to1.toDate());
+                const secondTicket = createTimeTicket(from2.toDate(), to2.toDate());
+                const thirdTicket = createTimeTicket(from3.toDate(), to3.toDate());
+                const forthTicket = createTimeTicket(from4.toDate(), to4.toDate());
+
+                return await request(app.getHttpServer())
+                    .post('/api/v1/tickets')
+                    .send(firstTicket)
+                    .expect(201)
+                    .then(async createError => {
+                        return Promise.all([
+                            // second
+                            request(app.getHttpServer())
+                                .post('/api/v1/tickets')
+                                .send(secondTicket)
+                                .expect(409),
+                            // third
+                            request(app.getHttpServer())
+                                .post('/api/v1/tickets')
+                                .send(thirdTicket)
+                                .expect(409),
+                            // forth
+                            request(app.getHttpServer())
+                                .post('/api/v1/tickets')
+                                .send(forthTicket)
+                                .expect(409),
+                        ]);
+                    });
+            },
+            timeout,
+        );
+
+        it(
+            'can not create Ticket because date is wrong',
+            async () => {
+                partyTicket.validToDateTime = '';
+                return await request(app.getHttpServer())
+                    .post('/api/v1/tickets')
+                    .send(partyTicket)
+                    .expect(400);
+            },
+            timeout,
+        );
+
+        it(
+            'can not create Ticket because passportId is wrong',
+            async () => {
+                partyTicket.passportId = '';
+                return await request(app.getHttpServer())
+                    .post('/api/v1/tickets')
+                    .send(partyTicket)
+                    .expect(400);
+            },
+            timeout,
+        );
+
+        it(
+            'can not create Ticket because validFromDate is in the past',
+            async () => {
+                partyTicket.validFromDateTime = new Date('2019-01-16').toISOString();
+                return await request(app.getHttpServer())
+                    .post('/api/v1/tickets')
+                    .send(partyTicket)
+                    .expect(400);
+            },
+            timeout,
+        );
     });
-
-    it(
-        'invalid ticket by id',
-        async () => {
-            await request(app.getHttpServer())
-                .post('/api/v1/tickets')
-                .send(partyTicket)
-                .expect(201)
-                .then(async creationResponse => {
-                    const createdTicket = creationResponse.body;
-                    await request(app.getHttpServer())
-                        .delete('/api/v1/tickets/' + createdTicket.ticketId)
-                        .expect(204);
-                });
-        },
-        timeout,
-    );
-
-    it(
-        'invalid ticket',
-
-        async () => {
-            const tomorrow = new Date();
-            tomorrow.setDate(tomorrow.getDate() + 1);
-            await request(app.getHttpServer())
-                .post('/api/v1/tickets')
-                .send(partyTicket)
-                .expect(201)
-                .then(async creationResponse => {
-                    MockDate.set('2200-11-22'); // jump to the futur, so the new ticket is invalid
-                    await request(app.getHttpServer())
-                        .delete('/api/v1/tickets/')
-                        .expect(204);
-                    await request(app.getHttpServer())
-                        .get('/api/v1/tickets/' + creationResponse.body.ticketId)
-                        .send()
-                        .expect(200)
-                        .then(ticket => {
-                            const t = ticket.body;
-                            expect(t.status).toBe('EXPIRED');
-                        });
-                });
-        },
-        timeout,
-    );
-
-    it(
-        'can not create Ticket because ticket exist',
-        async () => {
-            return await request(app.getHttpServer())
-                .post('/api/v1/tickets')
-                .send(partyTicket)
-                .expect(201)
-                .then(async createError => {
-                    await request(app.getHttpServer())
-                        .post('/api/v1/tickets')
-                        .send(partyTicket)
-                        .expect(409);
-                });
-        },
-        timeout,
-    );
-
-    it(
-        'can not create Ticket because date is wrong',
-        async () => {
-            partyTicket.validToDateTime = '';
-            return await request(app.getHttpServer())
-                .post('/api/v1/tickets')
-                .send(partyTicket)
-                .expect(400);
-        },
-        timeout,
-    );
-
-    it(
-        'can not create Ticket because passportId is wrong',
-        async () => {
-            partyTicket.passportId = '';
-            return await request(app.getHttpServer())
-                .post('/api/v1/tickets')
-                .send(partyTicket)
-                .expect(400);
-        },
-        timeout,
-    );
-
-    it(
-        'can not create Ticket because validFromDate is in the past',
-        async () => {
-            partyTicket.validFromDateTime = new Date('2019-01-16').toISOString();
-            return await request(app.getHttpServer())
-                .post('/api/v1/tickets')
-                .send(partyTicket)
-                .expect(400);
-        },
-        timeout,
-    );
 
     describe('Auth', () => {
         it(

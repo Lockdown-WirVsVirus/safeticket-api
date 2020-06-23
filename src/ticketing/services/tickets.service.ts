@@ -84,13 +84,21 @@ export class TicketsService {
                 .find({
                     $or: [
                         {
+                            // exists one with valid from smaller and to greater than new validFrom
+                            validFromDateTime: {
+                                $lte: ticketToCreate.validFromDateTime,
+                            },
                             validToDateTime: {
                                 $gte: ticketToCreate.validFromDateTime,
+                            },
+                        },
+                        {
+                            // exists one with valid from smaller and to greater than new validFrom
+                            validFromDateTime: {
                                 $lte: ticketToCreate.validToDateTime,
                             },
-                            validFromDateTime: {
-                                $gte: ticketToCreate.validFromDateTime,
-                                $lte: ticketToCreate.validToDateTime,
+                            validToDateTime: {
+                                $gte: ticketToCreate.validToDateTime,
                             },
                         },
                     ],
